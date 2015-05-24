@@ -1,0 +1,48 @@
+<!DOCTYPE struts PUBLIC
+"-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+"http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+    <constant name="struts.action.excludePattern" value="/SesionController,/LogoutServlet,/ServletEmpresa,/ReconocerServlet,/ServletTip"/>
+    
+    <include file="example.xml"/>
+    <!-- Configuration for the default package. -->
+    <package name="default" extends="struts-default">
+        <action name="Registro" 
+                class="com.RecetarioWeb.Controller.RegistroAction"
+                method="execute">
+            <result name="success">/index.jsp</result>
+            <result name="error">/form_user.jsp</result>
+        </action>
+        <action name="Cambiar"
+                class="com.RecetarioWeb.Controller.CambioContraAction"
+                method="execute">
+            <result name="success">/home_admin.jsp</result>
+            <result name="proccess">/home_user.jsp</result>
+            <result name="error">/cambiar_contrasenaAd.jsp</result>
+            <result name="failed">/cambiar_contrasena.jsp</result>
+        </action>
+        <action name="Categoria"
+                class="com.RecetarioWeb.Controller.CategoriaAction"
+                method="execute">
+            <result name="success">/home_admin.jsp</result>
+            <result name="error">/form_categoria.jsp</result>
+        </action>
+        <action name="Receta"
+                class="com.RecetarioWeb.Controller.RecetaAction"
+                method="execute">
+            <result name="success">/home_admin.jsp</result>
+            <result name="proccess">/home_user.jsp</result>
+            <result name="error">/form_recetaAd.jsp</result>
+            <result name="failed">/form_receta.jsp</result>
+        </action>
+        <action name="Modificar"
+                class="com.RecetarioWeb.Controller.ModificarUserAction"
+                method="execute">
+            <result name="proccess">/home_user.jsp</result>
+            <result name="success">/home_admin.jsp</result>
+            <result name="error">/modificar_admin.jsp</result>
+            <result name="failed">/modificar_user.jsp</result>
+        </action>
+    </package>
+</struts>
