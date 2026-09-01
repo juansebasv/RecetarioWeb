@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.recetarioweb</groupId>
+        <artifactId>recetarioweb-parent</artifactId>
+        <version>1.0.0</version>
+    </parent>
+
+    <artifactId>recetario-library</artifactId>
+    <packaging>jar</packaging>
+    <name>RecetarioWeb-Library</name>
+
+    <!--
+      Contiene lo COMPARTIDO entre el EJB y el WAR:
+        - com.RecetarioWeb.Entitys.*        (entidades JPA)
+        - com.RecetarioWeb.Beans.*Remote    (interfaces @Remote)
+        - com.RecetarioWeb.Negocio.UsuarioRemote
+        - com.RecetarioWeb.Exception.RecetarioException
+      En runtime este jar va en $PAYARA/glassfish/domains/domain1/lib para que
+      EJB y WAR carguen exactamente las mismas clases (necesario para @EJB remoto).
+    -->
+
+    <dependencies>
+        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-api</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <finalName>recetario-library</finalName>
+        <sourceDirectory>src</sourceDirectory>
+    </build>
+</project>

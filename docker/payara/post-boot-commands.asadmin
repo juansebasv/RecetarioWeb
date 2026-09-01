@@ -1,0 +1,7 @@
+# Comandos asadmin ejecutados por Payara despues del arranque (POSTBOOT_COMMANDS).
+# Crean el pool/datasource JDBC que espera persistence.xml y despliegan la app.
+
+create-jdbc-connection-pool --datasourceclassname org.postgresql.ds.PGSimpleDataSource --restype javax.sql.DataSource --property serverName=db:portNumber=5432:databaseName=RecetarioWeb:user=postgres:password=sebastian94 RecetarioconnectionPool
+create-jdbc-resource --connectionpoolid RecetarioconnectionPool jdbc/RecetarioDatasource
+deploy --force=true /opt/app/Recetario-Gestion-ejb.jar
+deploy --force=true --contextroot=RecetarioWeb-War --name=RecetarioWeb-War /opt/app/RecetarioWeb-War.war

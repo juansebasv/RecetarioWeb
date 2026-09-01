@@ -1,0 +1,978 @@
+/* ==========================================================================
+   recetario-ui.css  ·  Capa de estilo moderna (SOLO front)
+   Se carga DESPUES de bootstrap.css / theme.css y reescribe la presentacion:
+   barra de menu, hero, tarjetas, botones, formularios, footer + animaciones,
+   sombras, luces, iconos, hover glow y reveal al hacer scroll.
+   No cambia el marcado de negocio: todo es CSS sobre las clases existentes.
+   ========================================================================== */
+
+:root {
+    --rui-bg:        #fbf7f2;
+    --rui-surface:   #ffffff;
+    --rui-ink:       #2b2521;
+    --rui-muted:     #7c7269;
+    --rui-primary:   #e2683c;
+    --rui-primary-d: #c9552c;
+    --rui-accent:    #f2a341;
+    --rui-herb:      #4f9d69;
+    --rui-danger:    #d64545;
+    --rui-line:      rgba(43, 37, 33, .12);
+
+    --rui-r:     16px;
+    --rui-r-sm:  10px;
+    --rui-pill:  999px;
+
+    --rui-sh-1: 0 1px 2px rgba(43,37,33,.06), 0 6px 20px rgba(43,37,33,.09);
+    --rui-sh-2: 0 14px 40px rgba(43,37,33,.16);
+    --rui-glow: 0 0 0 3px rgba(226,104,60,.25);
+
+    --rui-t: .28s cubic-bezier(.2, .7, .2, 1);
+}
+
+/* --------------------------------------------------------------- base ---- */
+html { scroll-behavior: smooth; }
+
+body {
+    background: var(--rui-bg) !important;
+    color: var(--rui-ink) !important;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+::selection { background: var(--rui-primary); color: #fff; }
+
+body::-webkit-scrollbar { width: 12px; }
+body::-webkit-scrollbar-track { background: var(--rui-bg); }
+body::-webkit-scrollbar-thumb {
+    background: linear-gradient(var(--rui-primary), var(--rui-accent));
+    border: 3px solid var(--rui-bg);
+    border-radius: 10px;
+}
+
+section { padding: 52px 0; position: relative; }
+.aboutus   { background: var(--rui-bg); }
+.specialties { background: linear-gradient(180deg, #ffffff 0%, var(--rui-bg) 100%); }
+
+.heading { padding-top: 16px !important; padding-bottom: 0 !important; }
+.heading > br { display: none; }
+.specialties .heading > .table,
+.specialties .heading > table.table,
+.specialties .heading + .table { margin-top: 4px !important; }
+.aboutus .container > .row { margin-top: 8px; }
+.heading h2 {
+    font-family: 'Playball', cursive;
+    color: var(--rui-primary);
+    font-size: 2.7rem;
+    margin: 6px 0;
+    text-shadow: 0 2px 20px rgba(226,104,60,.18);
+    display: inline-flex;
+    align-items: center;
+    gap: 20px;
+}
+.heading h2::before,
+.heading h2::after {
+    content: "";
+    width: 76px; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--rui-primary));
+    border-radius: 2px;
+}
+.heading h2::after { transform: scaleX(-1); }
+.heading h3 {
+    color: var(--rui-muted);
+    font-weight: 400;
+    max-width: 760px;
+    margin: 12px auto 0;
+    font-size: 1.05rem;
+}
+.heading .dividerline { display: none !important; }
+
+/* ------------------------------------------------------------- navbar ---- */
+.menu {
+    position: fixed !important;
+    top: 0; left: 0; right: 0; bottom: auto !important;
+    margin: 0 !important;
+    z-index: 1000;
+    transition: transform var(--rui-t);
+}
+.navbar-wrapper, .navbar-wrapper .container, .navwrapper, .navArea { width: 100% !important; padding: 0 !important; }
+
+.navbar.navbar-inverse.navbar-static-top {
+    margin: 0 !important;
+    min-height: 0 !important;
+    border: 0 !important;
+    border-bottom: 1px solid rgba(255,255,255,.08) !important;
+    background: rgba(38, 32, 28, .55) !important;
+    -webkit-backdrop-filter: blur(14px) saturate(1.5);
+    backdrop-filter: blur(14px) saturate(1.5);
+    box-shadow: 0 6px 26px rgba(0,0,0,.18);
+    transition: background var(--rui-t), box-shadow var(--rui-t), padding var(--rui-t);
+}
+body.rui-scrolled .navbar.navbar-inverse.navbar-static-top {
+    background: rgba(24, 20, 17, .92) !important;
+    box-shadow: 0 12px 34px rgba(0,0,0,.32);
+}
+
+.navbar-collapse.collapse { display: block !important; height: auto !important; overflow: visible !important; padding: 0 !important; border: 0 !important; box-shadow: none !important; }
+.navbar-header { display: none !important; }
+
+.navbar-nav {
+    display: flex !important;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+    margin: 0 auto !important;
+    padding: 12px 14px !important;
+    float: none !important;
+}
+.navbar-nav > li, .menuItem { float: none !important; display: inline-flex !important; margin: 0 !important; }
+
+.menuItem > a,
+.navbar.navbar-inverse.navbar-static-top .nav > li > a {
+    display: inline-flex !important;
+    align-items: center;
+    gap: 8px;
+    color: #f3e9e0 !important;
+    font-size: 12.5px;
+    font-weight: 600;
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+    padding: 10px 16px !important;
+    line-height: 1 !important;
+    border-radius: var(--rui-pill);
+    background: transparent !important;
+    position: relative;
+    transition: color var(--rui-t), background var(--rui-t), box-shadow var(--rui-t), transform var(--rui-t);
+}
+.menuItem > a::before {
+    font-family: 'FontAwesome';
+    font-size: 12px;
+    opacity: .9;
+    transition: transform var(--rui-t);
+}
+.menuItem > a:hover::before { transform: scale(1.18); }
+
+.menuItem > a::after {
+    content: "";
+    position: absolute;
+    left: 16px; right: 16px; bottom: 5px;
+    height: 2px; border-radius: 2px;
+    background: linear-gradient(90deg, var(--rui-accent), var(--rui-primary));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform var(--rui-t);
+}
+.menuItem > a:hover,
+.navbar.navbar-inverse.navbar-static-top .nav > li > a:hover {
+    color: #fff !important;
+    background: linear-gradient(135deg, rgba(226,104,60,.28), rgba(242,163,65,.24)) !important;
+    box-shadow: 0 0 0 1px rgba(242,163,65,.35), 0 10px 24px rgba(226,104,60,.30);
+    transform: translateY(-2px);
+}
+.menuItem > a:hover::after { transform: scaleX(1); }
+
+.menuItem.active > a,
+.navbar-inverse .navbar-nav > .active > a,
+.navbar-inverse .navbar-nav > .active > a:focus,
+.navbar-inverse .navbar-nav > .active > a:hover {
+    color: #fff !important;
+    background: linear-gradient(135deg, var(--rui-primary), var(--rui-accent)) !important;
+    box-shadow: 0 10px 26px rgba(226,104,60,.42) !important;
+}
+
+/* iconos del menu segun destino */
+.menuItem > a[href*="index"]::before,
+.menuItem > a[href*="home_"]::before        { content: "\f015"; }
+.menuItem > a[href*="form_user"]::before     { content: "\f007"; }
+.menuItem > a[href*="receta"]::before        { content: "\f0f5"; }
+.menuItem > a[href*="tip"]::before           { content: "\f0eb"; }
+.menuItem > a[href*="categor"]::before       { content: "\f02c"; }
+.menuItem > a[href*="empresa"]::before       { content: "\f0f7"; }
+.menuItem > a[href*="modificar"]::before     { content: "\f044"; }
+.menuItem > a[href*="contrasena"]::before    { content: "\f084"; }
+
+/* boton SALIR / logout dentro del menu */
+.menuItem form { position: relative; display: inline-flex; margin: 0; }
+.menuItem form::before {
+    content: "\f08b";
+    font-family: 'FontAwesome';
+    position: absolute;
+    left: 15px; top: 50%;
+    transform: translateY(-50%);
+    color: #fff;
+    font-size: 12px;
+    pointer-events: none;
+    z-index: 2;
+}
+.menuItem form input[type="submit"],
+.menuItem .btn-link {
+    background: linear-gradient(135deg, var(--rui-danger), #e8654f) !important;
+    color: #fff !important;
+    padding: 9px 18px 9px 32px !important;
+    font-size: 12px !important;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    box-shadow: 0 8px 20px rgba(214,69,69,.38) !important;
+    text-decoration: none !important;
+}
+
+/* hamburguesa (movil, la inyecta recetario-ui.js) */
+.rui-nav-toggle { display: none; }
+
+/* ------------------------------------------------------------- hero ------ */
+/* animate.css + wow.js dejan elementos .wow ocultos hasta el scroll; los
+   forzamos visibles y usamos .rui-reveal (este archivo) para la entrada */
+.wow { visibility: visible !important; opacity: 1 !important; animation-name: none !important; }
+
+.banner .parallax,
+header .banner .parallax {
+    background:
+        radial-gradient(1200px 620px at 18% -12%, rgba(242,163,65,.38), transparent 60%),
+        radial-gradient(1000px 720px at 102% -2%, rgba(226,104,60,.34), transparent 55%),
+        linear-gradient(158deg, #241f1b 0%, #4a3a30 46%, #6d4b37 100%) !important;
+    background-attachment: fixed !important;
+    background-size: cover !important;
+    height: auto !important;
+    min-height: 440px !important;
+    position: relative;
+    overflow: hidden;
+}
+.banner .parallax .container {
+    height: auto !important;
+    min-height: 340px;
+    padding-top: 104px !important;
+    padding-bottom: 46px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.banner .parallax::before {
+    content: "";
+    position: absolute;
+    inset: -12% -12% auto -12%;
+    height: 130%;
+    background:
+        radial-gradient(320px 320px at 14% 28%, rgba(242,163,65,.40), transparent 70%),
+        radial-gradient(380px 380px at 86% 18%, rgba(226,104,60,.34), transparent 70%),
+        radial-gradient(300px 300px at 72% 88%, rgba(79,157,105,.22), transparent 70%);
+    filter: blur(24px);
+    animation: ruiFloat 13s ease-in-out infinite alternate;
+    pointer-events: none;
+}
+.banner .parallax::after {
+    content: "";
+    position: absolute; inset: 0;
+    background:
+        radial-gradient(120% 90% at 50% 0%, transparent 55%, rgba(0,0,0,.45) 100%),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+}
+.parallax-pattern-overlay { background: none !important; }
+
+#site-title {
+    max-width: 240px;
+    filter: drop-shadow(0 16px 34px rgba(0,0,0,.5));
+    animation: ruiFloat 6s ease-in-out infinite;
+}
+.intro, .banner .intro, h2.intro {
+    color: #fff !important;
+    text-shadow: 0 6px 30px rgba(0,0,0,.55);
+    letter-spacing: .6px;
+    font-family: 'Playball', cursive;
+    font-size: 2.6rem;
+}
+
+/* ------------------------------------------------------------ cards ------ */
+.papers {
+    background: var(--rui-surface);
+    border: 1px solid var(--rui-line);
+    border-radius: var(--rui-r);
+    padding: 24px;
+    box-shadow: var(--rui-sh-1);
+    position: relative;
+    overflow: hidden;
+    transition: transform var(--rui-t), box-shadow var(--rui-t);
+}
+.papers::before {
+    content: "";
+    position: absolute; inset: 0;
+    background: radial-gradient(340px circle at var(--rui-mx, 50%) var(--rui-my, 0%), rgba(226,104,60,.16), transparent 62%);
+    opacity: 0;
+    transition: opacity var(--rui-t);
+    pointer-events: none;
+}
+.papers:hover::before { opacity: 1; }
+.papers img {
+    border-radius: var(--rui-r-sm);
+    box-shadow: var(--rui-sh-1);
+    transition: transform .5s var(--rui-t);
+}
+.papers:hover img { transform: scale(1.045); }
+.papers h4 { color: var(--rui-ink); margin-top: 14px; }
+.papers a { color: var(--rui-primary); font-weight: 700; }
+
+/* ------- tablas de datos genericas (panel admin, listados) ------------- */
+table.table {
+    background: var(--rui-surface) !important;
+    border: 1px solid var(--rui-line) !important;
+    border-radius: var(--rui-r) !important;
+    overflow: hidden;
+    box-shadow: var(--rui-sh-1);
+    margin: 22px auto !important;
+    max-width: 1080px;
+}
+table.table > thead > tr > th,
+table.table > tbody > tr > th {
+    background: linear-gradient(90deg, var(--rui-primary), var(--rui-accent)) !important;
+    color: #fff !important;
+    border: 0 !important;
+    padding: 14px 16px !important;
+    font-weight: 700;
+    letter-spacing: .4px;
+    text-transform: uppercase;
+    font-size: 12.5px;
+}
+table.table > tbody > tr > td {
+    border-top: 1px solid var(--rui-line) !important;
+    padding: 13px 16px !important;
+    color: var(--rui-ink);
+    transition: background var(--rui-t);
+}
+table.table > tbody > tr:hover > td { background: #fff6ef !important; }
+table.table > tbody > tr > td.danger,
+table.table > tbody > tr > td.info,
+table.table > tbody > tr > td.warning,
+table.table > tbody > tr > td.active {
+    background: transparent !important;
+    color: var(--rui-ink) !important;
+}
+table.table font { color: var(--rui-ink) !important; }
+
+/* ------- listados en .specialties -> tarjetas ------------------------- */
+.specialties .table,
+.specialties table.table.table-hover {
+    width: 100% !important;
+    max-width: 960px;
+    margin: 20px auto 0 !important;
+    float: none !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    overflow: visible;
+    border-collapse: separate !important;
+    border-spacing: 0 14px !important;
+    background: transparent !important;
+}
+.specialties .table td {
+    border: 0 !important;
+    background: var(--rui-surface);
+    padding: 18px 22px !important;
+    vertical-align: middle;
+    box-shadow: var(--rui-sh-1);
+    transition: transform var(--rui-t), box-shadow var(--rui-t);
+}
+.specialties .table tr:hover td { transform: translateY(-3px); box-shadow: var(--rui-sh-2); }
+.specialties .table td:first-child { border-radius: var(--rui-r) 0 0 var(--rui-r); }
+.specialties .table td:last-child  { border-radius: 0 var(--rui-r) var(--rui-r) 0; }
+
+/* fila cabecera "Receta #N" -> barra verde slim */
+.specialties .table td.success {
+    background: linear-gradient(90deg, var(--rui-herb), #3f8a58) !important;
+    color: #fff !important;
+    font-style: normal !important;
+    font-weight: 700 !important;
+    letter-spacing: .6px;
+    padding: 9px 20px !important;
+    border-radius: var(--rui-r) !important;
+    box-shadow: 0 10px 22px rgba(79,157,105,.30) !important;
+    transform: none !important;
+}
+.specialties .table tr:hover td.success { transform: none !important; }
+.specialties .table td img {
+    width: 190px; height: 190px;
+    object-fit: cover;
+    border-radius: var(--rui-r-sm) !important;
+    box-shadow: var(--rui-sh-1);
+    transition: transform .5s var(--rui-t);
+}
+.specialties .table tr:hover td img { transform: scale(1.04); }
+.specialties .table font { color: var(--rui-primary-d) !important; }
+
+/* imagen rota (placeholders externos) -> mosaico degradado */
+img.rui-img-fallback {
+    object-fit: cover;
+    background: linear-gradient(135deg, var(--rui-accent), var(--rui-primary)) !important;
+    padding: 0 !important;
+}
+
+/* --------------------------------------------------------- buttons ------- */
+.btn,
+input[type="submit"], input[type="button"], button:not(.rui-nav-toggle) {
+    border: 0 !important;
+    border-radius: var(--rui-pill) !important;
+    padding: 11px 26px !important;
+    font-weight: 700 !important;
+    letter-spacing: .5px;
+    background: linear-gradient(135deg, var(--rui-primary), var(--rui-accent)) !important;
+    color: #fff !important;
+    box-shadow: 0 10px 22px rgba(226,104,60,.34);
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform var(--rui-t), box-shadow var(--rui-t), filter var(--rui-t);
+}
+.btn::after,
+input[type="submit"]::after {
+    content: "";
+    position: absolute;
+    top: 0; left: -130%;
+    width: 55%; height: 100%;
+    background: linear-gradient(100deg, transparent, rgba(255,255,255,.55), transparent);
+    transform: skewX(-20deg);
+    transition: left .6s ease;
+}
+.btn:hover, input[type="submit"]:hover, input[type="button"]:hover, button:not(.rui-nav-toggle):hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 30px rgba(226,104,60,.46);
+    filter: brightness(1.06);
+}
+.btn:hover::after, input[type="submit"]:hover::after { left: 150%; }
+.btn:active, input[type="submit"]:active { transform: translateY(0) scale(.97); }
+
+.btn-warning { background: linear-gradient(135deg, var(--rui-accent), #f6bd63) !important; color: #3b2a17 !important; }
+.btn-link:not(.menuItem .btn-link) { background: transparent !important; color: var(--rui-primary) !important; box-shadow: none !important; }
+
+/* --------------------------------------------------------- forms -------- */
+.form-control,
+input[type="text"], input[type="password"], input[type="email"],
+input[type="date"], input[type="number"], textarea, select {
+    border: 1px solid var(--rui-line) !important;
+    border-radius: var(--rui-r-sm) !important;
+    padding: 11px 14px !important;
+    background: #fff !important;
+    color: var(--rui-ink) !important;
+    box-shadow: none !important;
+    transition: border-color var(--rui-t), box-shadow var(--rui-t);
+}
+.form-control:focus,
+input:focus, textarea:focus, select:focus {
+    border-color: var(--rui-primary) !important;
+    box-shadow: var(--rui-glow) !important;
+    outline: 0 !important;
+}
+.control-label, label { color: var(--rui-ink); font-weight: 700; }
+
+/* formulario de login del index (estaba maquetado dentro de una <table>) */
+.specialties .heading > form {
+    max-width: 520px;
+    margin: 26px auto 0;
+    background: var(--rui-surface);
+    border: 1px solid var(--rui-line);
+    border-radius: var(--rui-r);
+    padding: 30px 28px;
+    box-shadow: var(--rui-sh-1);
+    text-align: left;
+}
+.specialties .heading > form table {
+    display: block !important;
+    width: 100% !important;
+    float: none !important;
+    margin: 0 !important;
+    border-spacing: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+}
+.specialties .heading > form .form-group {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin: 12px 0 !important;
+}
+.specialties .heading > form .form-group + br { display: none; }
+.specialties .heading > form .control-label { width: auto !important; text-align: left !important; margin: 0 !important; padding: 0 !important; }
+.specialties .heading > form .col-sm-4,
+.specialties .heading > form .col-sm-3,
+.specialties .heading > form [class*="col-"] { width: auto !important; flex: 1 1 220px; padding: 0 !important; }
+.specialties .heading > form br { line-height: 0; }
+
+/* -------------------------------------------------------- footer -------- */
+.footer {
+    background: linear-gradient(180deg, #2b2521 0%, #1b1714 100%) !important;
+    color: #cdbfb3 !important;
+    padding: 60px 0 34px !important;
+}
+.footer p { color: #b7a99d; }
+.footer ul { padding: 0; margin: 0 0 22px; }
+.footer ul li { display: inline-block; margin: 0 7px; }
+.footer ul li a {
+    width: 46px; height: 46px; line-height: 46px;
+    display: inline-block;
+    text-align: center;
+    border-radius: 50%;
+    background: rgba(255,255,255,.06);
+    color: #e9ddd2 !important;
+    font-size: 17px;
+    transition: transform var(--rui-t), background var(--rui-t), box-shadow var(--rui-t);
+}
+.footer ul li a:hover {
+    background: linear-gradient(135deg, var(--rui-primary), var(--rui-accent));
+    color: #fff !important;
+    transform: translateY(-5px) rotate(8deg);
+    box-shadow: 0 12px 26px rgba(226,104,60,.48);
+}
+.gototop i {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 54px; height: 54px;
+    border-radius: 50%;
+    color: #fff;
+    background: linear-gradient(135deg, var(--rui-primary), var(--rui-accent));
+    box-shadow: 0 12px 28px rgba(226,104,60,.45);
+    animation: ruiPulse 2.6s ease-in-out infinite;
+    transition: transform var(--rui-t);
+}
+.gototop:hover i { transform: translateY(-5px) scale(1.06); }
+
+/* -------------------------------------------------- reveal / motion ----- */
+.rui-reveal { opacity: 0; transform: translateY(16px); transition: opacity .6s var(--rui-t), transform .6s var(--rui-t); }
+.rui-reveal.rui-in { opacity: 1; transform: none; }
+
+@keyframes ruiFloat {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-12px); }
+}
+@keyframes ruiPulse {
+    0%, 100% { box-shadow: 0 12px 28px rgba(226,104,60,.45); }
+    50%      { box-shadow: 0 12px 28px rgba(226,104,60,.45), 0 0 0 12px rgba(226,104,60,.10); }
+}
+@keyframes ruiFadeInDown {
+    from { opacity: 0; transform: translateY(-16px); }
+    to   { opacity: 1; transform: none; }
+}
+header .container > * { animation: ruiFadeInDown .9s var(--rui-t) both; }
+header .container > h2.intro { animation-delay: .15s; }
+
+/* -------------------------------------------------- responsive ---------- */
+@media (max-width: 820px) {
+    .navbar-nav { padding: 10px 8px 14px !important; }
+    .rui-nav-toggle {
+        display: inline-flex;
+        align-items: center; justify-content: center;
+        position: absolute; right: 14px; top: 9px;
+        width: 42px; height: 42px;
+        border-radius: 12px;
+        border: 1px solid rgba(255,255,255,.18) !important;
+        background: rgba(255,255,255,.08) !important;
+        box-shadow: none;
+        z-index: 3;
+    }
+    .rui-nav-toggle span,
+    .rui-nav-toggle span::before,
+    .rui-nav-toggle span::after {
+        content: "";
+        display: block;
+        width: 20px; height: 2px;
+        background: #f3e9e0;
+        border-radius: 2px;
+        transition: transform var(--rui-t), opacity var(--rui-t);
+    }
+    .rui-nav-toggle span::before { transform: translateY(-6px); }
+    .rui-nav-toggle span::after  { transform: translateY(4px); }
+    .rui-nav-toggle.rui-open span { background: transparent; }
+    .rui-nav-toggle.rui-open span::before { transform: rotate(45deg); }
+    .rui-nav-toggle.rui-open span::after  { transform: rotate(-45deg) translateY(-1px); }
+
+    .navbar-nav.rui-collapsed {
+        width: 100%;
+        max-height: 0;
+        overflow: hidden;
+        padding: 0 !important;
+        transition: max-height .4s ease, padding .4s ease;
+    }
+    .navbar-nav.rui-collapsed.rui-open { max-height: 78vh; overflow: auto; padding: 8px 10px 16px !important; }
+    .navbar-nav > li, .menuItem { width: 100%; }
+    .menuItem > a { width: 100%; justify-content: center; }
+    .menuItem > a::after { display: none; }
+
+    .specialties .table td { display: block; width: 100%; box-shadow: none; }
+    .specialties .table tr { display: block; background: var(--rui-surface); border-radius: var(--rui-r); box-shadow: var(--rui-sh-1); margin-bottom: 14px; overflow: hidden; }
+    .specialties .table td:first-child, .specialties .table td:last-child { border-radius: 0 !important; }
+    .specialties .table td img { width: 100%; height: 210px; }
+    .intro, h2.intro { font-size: 2rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    * { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; }
+    .rui-reveal { opacity: 1 !important; transform: none !important; }
+    html { scroll-behavior: auto; }
+}
+
+/* =======================================================================
+   Extras: barra de progreso, texto con degradado animado, tilt 3D en
+   tarjetas, brillo bajo el cursor en botones, toasts y overlay de sesion.
+   ======================================================================= */
+
+/* --- barra de progreso de scroll ---------------------------------- */
+.rui-progress {
+    position: fixed;
+    top: 0; left: 0;
+    height: 3px;
+    width: 0;
+    z-index: 1200;
+    background: linear-gradient(90deg, var(--rui-accent), var(--rui-primary), #ffd9a8);
+    box-shadow: 0 0 14px rgba(226,104,60,.6);
+    transition: width .12s linear;
+}
+
+/* --- texto de titulos con degradado en movimiento ---------------- */
+.heading h2, .intro, h2.intro {
+    background: linear-gradient(90deg, var(--rui-primary), var(--rui-accent), #ffcf99, var(--rui-primary));
+    background-size: 300% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    animation: ruiGradientText 8s ease infinite;
+}
+.intro, h2.intro {
+    filter: drop-shadow(0 6px 26px rgba(0,0,0,.45));
+}
+@keyframes ruiGradientText {
+    0%, 100% { background-position: 0% 50%; }
+    50%      { background-position: 100% 50%; }
+}
+
+/* --- tarjetas: inclinacion 3D + luz que sigue al cursor ---------- */
+.papers {
+    transform-style: preserve-3d;
+    transform: perspective(900px) rotateX(var(--rui-ry, 0deg)) rotateY(var(--rui-rx, 0deg));
+    transition: transform .18s var(--rui-t), box-shadow var(--rui-t);
+    will-change: transform;
+}
+.papers:hover {
+    transform: perspective(900px) rotateX(var(--rui-ry, 0deg)) rotateY(var(--rui-rx, 0deg)) scale(1.02);
+    box-shadow: var(--rui-sh-2), 0 0 0 1px rgba(242,163,65,.35);
+}
+.papers::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(115deg, transparent 40%, rgba(255,255,255,.35) 50%, transparent 60%);
+    transform: translateX(-120%);
+    transition: transform .7s ease;
+    pointer-events: none;
+    mix-blend-mode: overlay;
+}
+.papers:hover::after { transform: translateX(120%); }
+.papers img { transition: transform .5s var(--rui-t), filter var(--rui-t); }
+.papers:hover img { filter: saturate(1.12) brightness(1.04); }
+
+/* --- brillo bajo el cursor en botones --------------------------- */
+.btn, input[type="submit"], input[type="button"] {
+    background-image:
+        radial-gradient(120px circle at var(--rui-bx, 50%) var(--rui-by, 50%), rgba(255,255,255,.35), transparent 60%),
+        linear-gradient(135deg, var(--rui-primary), var(--rui-accent)) !important;
+}
+.btn-warning {
+    background-image:
+        radial-gradient(120px circle at var(--rui-bx, 50%) var(--rui-by, 50%), rgba(255,255,255,.4), transparent 60%),
+        linear-gradient(135deg, var(--rui-accent), #f6bd63) !important;
+}
+.rui-ripple {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255,255,255,.55);
+    transform: scale(0);
+    animation: ruiRipple .6s ease-out forwards;
+    pointer-events: none;
+}
+@keyframes ruiRipple { to { transform: scale(2.6); opacity: 0; } }
+
+/* --- pildora "Receta #N": brillo recorriendo ------------------- */
+.specialties .table td.success {
+    position: relative;
+    overflow: hidden;
+}
+.specialties .table td.success::after {
+    content: "";
+    position: absolute;
+    top: 0; left: -60%;
+    width: 45%; height: 100%;
+    background: linear-gradient(100deg, transparent, rgba(255,255,255,.6), transparent);
+    transform: skewX(-18deg);
+    animation: ruiShimmer 3.4s ease-in-out infinite;
+}
+@keyframes ruiShimmer {
+    0%   { left: -60%; }
+    55%  { left: 130%; }
+    100% { left: 130%; }
+}
+
+/* --- entrada escalonada de los items del menu (solo si hay JS) --- */
+html.rui-js .menuItem { opacity: 0; transform: translateY(-8px); }
+html.rui-js .menuItem.rui-navin {
+    opacity: 1; transform: none;
+    transition: opacity .4s var(--rui-t), transform .4s var(--rui-t);
+}
+
+/* --- enlaces de contenido: subrayado que crece --------------- */
+.aboutus a, .specialties a:not(.btn):not(.gototop), .footer p a {
+    position: relative;
+}
+.aboutus a::after, .specialties a:not(.btn):not(.gototop)::after {
+    content: "";
+    position: absolute; left: 0; bottom: -2px;
+    width: 100%; height: 2px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform var(--rui-t);
+}
+.aboutus a:hover::after, .specialties a:not(.btn):not(.gototop):hover::after {
+    transform: scaleX(1);
+    transform-origin: left;
+}
+
+/* --- imagen de relleno: leve flotacion ---------------------- */
+img.rui-img-fallback { animation: ruiFloat 7s ease-in-out infinite; }
+
+/* --- textos largos: buen wrapping en tarjetas -------------- */
+.papers p, .papers h4,
+.specialties .table td,
+.specialties .table td i,
+.aboutus p, .heading h3, blockquote {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    hyphens: auto;
+}
+.specialties .table td i { line-height: 1.6; }
+
+/* descripcion en las tarjetas de listado: teaser de ~6 lineas con degradado */
+.specialties .table td i ~ i {
+    display: -webkit-box;
+    -webkit-line-clamp: 6;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    position: relative;
+    color: var(--rui-muted);
+    font-style: normal;
+    max-width: 640px;
+}
+.specialties .table td font { display: inline-block; margin-bottom: 4px; }
+
+/* pagina de categorias: cada opcion como tarjeta seleccionable */
+.specialties form[action="ReconocerServlet"][method="get"] {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 18px;
+    max-width: 1040px;
+    margin: 20px auto 0;
+    text-align: left;
+}
+.specialties form[action="ReconocerServlet"][method="get"] > br { display: none; }
+.specialties form[action="ReconocerServlet"][method="get"] > input[type="submit"] { grid-column: 1 / -1; justify-self: center; margin-top: 6px; }
+.rui-cat {
+    display: block;
+    background: var(--rui-surface);
+    border: 1px solid var(--rui-line);
+    border-radius: var(--rui-r);
+    padding: 20px 22px;
+    box-shadow: var(--rui-sh-1);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: transform var(--rui-t), box-shadow var(--rui-t), border-color var(--rui-t);
+}
+.rui-cat::before {
+    content: "";
+    position: absolute; left: 0; top: 0; bottom: 0;
+    width: 4px;
+    background: linear-gradient(180deg, var(--rui-primary), var(--rui-accent));
+    transform: scaleY(0);
+    transform-origin: top;
+    transition: transform var(--rui-t);
+}
+.rui-cat:hover { transform: translateY(-4px); box-shadow: var(--rui-sh-2); border-color: rgba(242,163,65,.4); }
+.rui-cat:hover::before { transform: scaleY(1); }
+.rui-cat input[type="radio"] { position: absolute; top: 18px; right: 18px; accent-color: var(--rui-primary); width: 18px; height: 18px; }
+.rui-cat:has(input:checked) { border-color: var(--rui-primary); box-shadow: var(--rui-glow), var(--rui-sh-1); }
+.rui-cat:has(input:checked)::before { transform: scaleY(1); }
+.rui-cat-name {
+    display: block;
+    font-family: 'Playball', cursive;
+    font-size: 1.7rem;
+    color: var(--rui-primary);
+    margin: 0 26px 8px 0;
+}
+.rui-cat-desc {
+    display: block;
+    color: var(--rui-muted);
+    line-height: 1.7;
+    font-size: .97rem;
+}
+
+/* cita larga en las paginas de detalle (page_view_*) */
+blockquote {
+    position: relative;
+    margin: 22px auto;
+    max-width: 760px;
+    padding: 26px 30px 26px 56px;
+    background: var(--rui-surface);
+    border: 1px solid var(--rui-line);
+    border-left: 5px solid var(--rui-primary);
+    border-radius: var(--rui-r);
+    box-shadow: var(--rui-sh-1);
+    font-size: 1.05rem;
+    line-height: 1.75;
+    color: var(--rui-ink);
+    text-align: left;
+}
+blockquote::before {
+    content: "\201C";
+    position: absolute;
+    left: 16px; top: 6px;
+    font-family: Georgia, serif;
+    font-size: 3rem;
+    color: var(--rui-accent);
+    line-height: 1;
+}
+blockquote cite {
+    display: block;
+    margin-top: 14px;
+    font-style: normal;
+    font-weight: 700;
+    color: var(--rui-primary);
+}
+blockquote cite .fa { color: var(--rui-accent); }
+
+/* --- back-to-top flotante --------------------------------- */
+.footer .gototop {
+    position: fixed;
+    right: 22px; bottom: 22px;
+    z-index: 1100;
+    opacity: 0;
+    transform: translateY(16px) scale(.8);
+    transition: opacity var(--rui-t), transform var(--rui-t);
+    pointer-events: none;
+}
+body.rui-scrolled .footer .gototop {
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+}
+
+/* =========================== TOASTS ================================ */
+.rui-toast-wrap {
+    position: fixed;
+    top: 84px; right: 20px;
+    z-index: 1300;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: min(92vw, 380px);
+}
+.rui-toast {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 16px 16px;
+    border-radius: 14px;
+    background: rgba(28, 24, 21, .92);
+    color: #fff;
+    box-shadow: 0 18px 44px rgba(0,0,0,.32);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,.1);
+    position: relative;
+    overflow: hidden;
+    transform: translateX(120%);
+    opacity: 0;
+    transition: transform .45s cubic-bezier(.2,.9,.2,1), opacity .45s ease;
+}
+.rui-toast.rui-show { transform: none; opacity: 1; }
+.rui-toast.rui-hide { transform: translateX(120%); opacity: 0; }
+.rui-toast .rui-t-ico {
+    flex: 0 0 auto;
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center; justify-content: center;
+    font-family: 'FontAwesome';
+    font-size: 15px;
+    color: #fff;
+}
+.rui-toast .rui-t-body { flex: 1 1 auto; font-size: 14px; line-height: 1.45; }
+.rui-toast .rui-t-title { font-weight: 700; letter-spacing: .3px; margin-bottom: 2px; }
+.rui-toast::after {
+    content: "";
+    position: absolute;
+    left: 0; bottom: 0;
+    height: 3px; width: 100%;
+    background: linear-gradient(90deg, var(--rui-accent), var(--rui-primary));
+    transform-origin: left;
+    animation: ruiToastBar 4.2s linear forwards;
+}
+@keyframes ruiToastBar { from { transform: scaleX(1); } to { transform: scaleX(0); } }
+.rui-toast.rui-success .rui-t-ico { background: linear-gradient(135deg, var(--rui-herb), #3f8a58); }
+.rui-toast.rui-success .rui-t-ico::before { content: "\f00c"; }
+.rui-toast.rui-success::after { background: linear-gradient(90deg, #6fce93, var(--rui-herb)); }
+.rui-toast.rui-info .rui-t-ico { background: linear-gradient(135deg, #4a90d9, #2f6fb0); }
+.rui-toast.rui-info .rui-t-ico::before { content: "\f0eb"; }
+.rui-toast.rui-info::after { background: linear-gradient(90deg, #7db6ec, #4a90d9); }
+.rui-toast.rui-error .rui-t-ico { background: linear-gradient(135deg, var(--rui-danger), #e8654f); }
+.rui-toast.rui-error .rui-t-ico::before { content: "\f071"; }
+.rui-toast.rui-error::after { background: linear-gradient(90deg, #ef8a8a, var(--rui-danger)); }
+
+@media (max-width: 560px) {
+    .rui-toast-wrap { left: 12px; right: 12px; max-width: none; top: 76px; }
+}
+
+/* ==================== OVERLAY DE BIENVENIDA / DESPEDIDA ============ */
+.rui-splash {
+    position: fixed;
+    inset: 0;
+    z-index: 1400;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background:
+        radial-gradient(60% 60% at 50% 45%, rgba(226,104,60,.35), transparent 70%),
+        rgba(24, 20, 17, .55);
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+    opacity: 0;
+    animation: ruiSplashIn .5s ease forwards;
+}
+.rui-splash.rui-out { animation: ruiSplashOut .6s ease forwards; }
+.rui-splash .rui-splash-card {
+    text-align: center;
+    color: #fff;
+    transform: scale(.86);
+    animation: ruiSplashPop .6s cubic-bezier(.2,.9,.2,1) forwards;
+}
+.rui-splash .rui-splash-ico {
+    font-size: 54px;
+    display: block;
+    margin-bottom: 10px;
+    filter: drop-shadow(0 10px 28px rgba(0,0,0,.5));
+    animation: ruiFloat 3s ease-in-out infinite;
+}
+.rui-splash .rui-splash-title {
+    font-family: 'Playball', cursive;
+    font-size: clamp(2rem, 6vw, 3.4rem);
+    text-shadow: 0 8px 34px rgba(0,0,0,.5);
+}
+.rui-splash .rui-splash-sub {
+    margin-top: 6px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-size: 13px;
+    opacity: .85;
+}
+@keyframes ruiSplashIn  { from { opacity: 0; } to { opacity: 1; } }
+@keyframes ruiSplashOut { from { opacity: 1; } to { opacity: 0; visibility: hidden; } }
+@keyframes ruiSplashPop { from { transform: scale(.86); opacity: 0; } to { transform: scale(1); opacity: 1; } }
