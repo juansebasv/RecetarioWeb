@@ -1,0 +1,9 @@
+.git
+**/target
+**/build
+**/dist
+**/nbproject/private
+*.md
+docker-compose.yml
+.idea
+.vscode

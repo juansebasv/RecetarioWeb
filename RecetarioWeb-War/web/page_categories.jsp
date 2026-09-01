@@ -32,10 +32,11 @@
         <link rel="stylesheet" href="css/font-awesome.css">
         <link rel="stylesheet" href="css/animate.css">
         <link rel="stylesheet" href="css/theme.css">
+        <link rel="stylesheet" href="css/recetario-ui.css">
 
-        <link href='http://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
-        <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,300italic,400italic,600,600italic,700,700italic,800,800italic' rel='stylesheet' type='text/css'>
-        <link href='http://fonts.googleapis.com/css?family=Playball' rel='stylesheet' type='text/css'>
+        <link href='https://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
+        <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,300italic,400italic,600,600italic,700,700italic,800,800italic' rel='stylesheet' type='text/css'>
+        <link href='https://fonts.googleapis.com/css?family=Playball' rel='stylesheet' type='text/css'>
 
     </head>
     <body>
@@ -97,7 +98,7 @@
                         <img class="dividerline" src="img/sep.png" alt="">
                         <form action="ReconocerServlet" method="get">
                             <%for (int i = 0; i < categorias.size(); i++) {%>
-                            <input type="radio" name="catredirec" value="<%=categorias.get(i).getNombrecat()%>"/>&nbsp;&nbsp;<i><font style="color:#398439 " size="5"><strong><%=categorias.get(i).getNombrecat()%></strong></font></i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp
+                            <label class="rui-cat"><input type="radio" name="catredirec" value="<%=categorias.get(i).getNombrecat()%>"/><span class="rui-cat-name"><%=categorias.get(i).getNombrecat()%></span><span class="rui-cat-desc"><%=categorias.get(i).getDescripcion()%></span></label>
                                     <%}%>
                             <br/><br/>
                             <input type="submit" value="Filtrar" title="Filtrar" class="btn btn-warning"/>
@@ -166,5 +167,6 @@
                 });
             });
         </script>
+        <script src="js/recetario-ui.js"></script>
     </body>
 </html>

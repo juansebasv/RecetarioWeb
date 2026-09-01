@@ -1,8 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<persistence version="2.1" xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
-  <persistence-unit name="Recetario-Gestion-ejbPU" transaction-type="JTA">
-    <jta-data-source>jdbc/RecetarioDatasource</jta-data-source>
-    <exclude-unlisted-classes>false</exclude-unlisted-classes>
-    <properties/>
-  </persistence-unit>
+<persistence version="2.1"
+             xmlns="http://xmlns.jcp.org/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
+
+    <persistence-unit name="Recetario-Gestion-ejbPU" transaction-type="JTA">
+        <jta-data-source>jdbc/RecetarioDatasource</jta-data-source>
+
+        <!--
+          Las entidades viven en recetario-library.jar (domain1/lib), fuera del
+          jar raiz de esta unidad de persistencia; por eso se listan explicitamente
+          y se desactiva el escaneo automatico.
+        -->
+        <class>com.RecetarioWeb.Entitys.Categoria</class>
+        <class>com.RecetarioWeb.Entitys.Comentario</class>
+        <class>com.RecetarioWeb.Entitys.Empresa</class>
+        <class>com.RecetarioWeb.Entitys.Membrecia</class>
+        <class>com.RecetarioWeb.Entitys.Persona</class>
+        <class>com.RecetarioWeb.Entitys.Receta</class>
+        <class>com.RecetarioWeb.Entitys.Tip</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+
+        <properties>
+            <!-- El esquema lo crea docker/db/init/01-schema.sql, no el proveedor JPA -->
+            <property name="javax.persistence.schema-generation.database.action" value="none"/>
+            <!-- Sin weaving: las entidades las carga el classloader comun de Payara -->
+            <property name="eclipselink.weaving" value="false"/>
+        </properties>
+    </persistence-unit>
 </persistence>

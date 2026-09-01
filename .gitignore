@@ -1,0 +1,26 @@
+# --- Salida de compilacion ---
+**/target/
+**/build/
+**/dist/
+.gradle/
+
+# --- NetBeans (se conserva nbproject/ salvo lo privado) ---
+nbproject/private/
+**/nbproject/private/
+
+# --- IDE ---
+.idea/
+*.iml
+.vscode/
+.settings/
+.classpath
+.project
+bin/
+
+# --- Sistema operativo ---
+.DS_Store
+Thumbs.db
+
+# --- Logs / temporales ---
+*.log
+*.pid

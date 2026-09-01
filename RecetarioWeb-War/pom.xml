@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.recetarioweb</groupId>
+        <artifactId>recetarioweb-parent</artifactId>
+        <version>1.0.0</version>
+    </parent>
+
+    <artifactId>recetario-war</artifactId>
+    <packaging>war</packaging>
+    <name>RecetarioWeb-War</name>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.recetarioweb</groupId>
+            <artifactId>recetario-library</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-web-api</artifactId>
+        </dependency>
+        <!-- Struts 2.3.x: mantiene el filtro org.apache.struts2.dispatcher.ng.filter.* de web.xml -->
+        <dependency>
+            <groupId>org.apache.struts</groupId>
+            <artifactId>struts2-core</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <finalName>RecetarioWeb-War</finalName>
+        <sourceDirectory>src/java</sourceDirectory>
+        <resources>
+            <!-- struts.xml y example.xml viven junto al codigo -> WEB-INF/classes -->
+            <resource>
+                <directory>src/java</directory>
+                <includes>
+                    <include>*.xml</include>
+                </includes>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <configuration>
+                    <warSourceDirectory>web</warSourceDirectory>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
