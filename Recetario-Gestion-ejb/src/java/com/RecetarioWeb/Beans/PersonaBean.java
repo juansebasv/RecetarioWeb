@@ -63,7 +63,8 @@ public class PersonaBean implements PersonaBeanRemote {
 
     @Override
     public Persona findByActivo(String activo) {
-        return personaFacade.findByCodigo(activo);
+        ArrayList<Persona> activos = personaFacade.findByActivo(activo);
+        return (activos == null || activos.isEmpty()) ? null : activos.get(0);
     }
 
     @Override

@@ -849,20 +849,31 @@ blockquote cite {
 }
 blockquote cite .fa { color: var(--rui-accent); }
 
-/* --- back-to-top flotante --------------------------------- */
-.footer .gototop {
+/* --- back-to-top flotante --------------------------------------------------
+   recetario-ui.js saca <a.gototop> del <footer>, lo cuelga de <body> y le anade
+   .rui-float. Asi 'position: fixed' no queda atrapado por ningun ancestro con
+   transform y el boton se ve SIEMPRE abajo a la derecha al bajar la pagina.
+   El circulo con degradado lo pinta la regla '.gototop i' de mas arriba. */
+.gototop.rui-float {
     position: fixed;
-    right: 22px; bottom: 22px;
-    z-index: 1100;
+    right: 22px;
+    bottom: 22px;
+    z-index: 1200;
+    margin: 0;
     opacity: 0;
     transform: translateY(16px) scale(.8);
     transition: opacity var(--rui-t), transform var(--rui-t);
     pointer-events: none;
 }
-body.rui-scrolled .footer .gototop {
+.gototop.rui-float.rui-show {
     opacity: 1;
     transform: none;
     pointer-events: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .gototop.rui-float { transition: opacity .2s linear; }
+    .gototop.rui-float.rui-show { transform: none; }
 }
 
 /* =========================== TOASTS ================================ */

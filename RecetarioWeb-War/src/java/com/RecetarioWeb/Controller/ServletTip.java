@@ -9,13 +9,16 @@ import com.RecetarioWeb.Beans.ComentarioBeanRemote;
 import com.RecetarioWeb.Beans.PersonaBeanRemote;
 import com.RecetarioWeb.Beans.RecetaBeanRemote;
 import com.RecetarioWeb.Beans.TipBeanRemote;
+import com.RecetarioWeb.Controller.support.Roles;
+import com.RecetarioWeb.Controller.support.WebKeys;
 import com.RecetarioWeb.Entitys.Comentario;
 import com.RecetarioWeb.Entitys.Persona;
 import com.RecetarioWeb.Entitys.Receta;
 import com.RecetarioWeb.Entitys.Tip;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -24,119 +27,82 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
+ * Alta de tips (POST) y de comentarios sobre la receta seleccionada (GET).
  *
  * @author Personal
  */
 @WebServlet(name = "ServletTip", urlPatterns = {"/ServletTip"})
 public class ServletTip extends HttpServlet {
-    
+
+    private static final Logger LOG = Logger.getLogger(ServletTip.class.getName());
+
     @EJB
     private RecetaBeanRemote recetaBean;
-    
+
     @EJB
     private ComentarioBeanRemote comentarioBean;
-    
+
     @EJB
     private PersonaBeanRemote personaBean;
-    
+
     @EJB
     private TipBeanRemote tipBean;
 
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet ServletTip</title>");
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet ServletTip at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
-        }
-    }
-
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /**
-     * Handles the HTTP <code>GET</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
+    /** Alta de un comentario sobre la receta seleccionada. */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        //processRequest(request, response);
         Client client = Client.getInstace();
-        String descriComen = request.getParameter("descriComen");
+        String texto = request.getParameter("descriComen");
         Persona persona = personaBean.findByUsername(client.getNickname());
         Receta receta = recetaBean.findByName(client.getNombre());
-        if (persona != null) {
+
+        if (persona != null && receta != null && texto != null && !texto.trim().isEmpty()) {
             Comentario comentario = new Comentario();
             comentario.setFechacomen(new Date());
             comentario.setIdrecetacomen(receta.getIdreceta());
-            comentario.setTextocomen(descriComen);
+            comentario.setTextocomen(texto);
             comentario.setIdusercomen(persona.getCodigo());
             comentarioBean.registrarComentario(comentario);
-            response.sendRedirect("../RecetarioWeb-War/home_user.jsp");
+            LOG.log(Level.INFO, "Comentario de ''{0}'' en la receta ''{1}''",
+                    new Object[]{persona.getCodigo(), receta.getNombrereceta()});
         }
+        response.sendRedirect(WebKeys.VIEW_HOME_USER);
     }
 
-    /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
+    /** Alta de un tip por parte de un usuario autenticado. */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        //processRequest(request, response);
         Client client = Client.getInstace();
         String nameTip = request.getParameter("nameTip");
         String autorTip = request.getParameter("autorTip");
         String descripTip = request.getParameter("descripTip");
         Persona persona = personaBean.findByUsername(client.getNickname());
-        if (persona != null) {
+
+        if (persona == null) {
+            response.sendRedirect(WebKeys.VIEW_INDEX);
+            return;
+        }
+        boolean creado = false;
+        if (nameTip != null && !nameTip.trim().isEmpty() && tipBean.findByName(nameTip.trim()) == null) {
             Tip tip = new Tip();
             tip.setAutortip(autorTip);
             tip.setDescripciontip(descripTip);
-            tip.setNombretip(nameTip);
+            tip.setNombretip(nameTip.trim());
             tip.setFechatip(new Date());
             tip.setIdusertip(persona.getCodigo());
             tipBean.registrarTip(tip);
-            if (persona.getRol().equals(1)) {
-                response.sendRedirect("../RecetarioWeb-War/home_admin.jsp");
-            } else if (persona.getRol().equals(2)) {
-                response.sendRedirect("../RecetarioWeb-War/home_user.jsp");
-            }
+            creado = true;
+            LOG.log(Level.INFO, "Tip creado: ''{0}'' por ''{1}''",
+                    new Object[]{nameTip.trim(), persona.getCodigo()});
         }
+        String home = Roles.isAdmin(persona.getRol()) ? WebKeys.VIEW_HOME_ADMIN : WebKeys.VIEW_HOME_USER;
+        response.sendRedirect(home + (creado ? "?created=tip" : ""));
     }
 
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
     @Override
     public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
-
+        return "Alta de tips y comentarios de RecetarioWeb";
+    }
 }

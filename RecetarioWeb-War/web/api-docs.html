@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<!--
+  Swagger UI de la API REST de RecetarioWeb.
+
+  El documento OpenAPI lo genera SmallRye (incluido en Payara 5) a partir de las
+  anotaciones JAX-RS + MicroProfile OpenAPI de com.RecetarioWeb.Api.*.
+  Endpoints del documento:
+      /openapi            (YAML)
+      /openapi?format=JSON
+
+  Swagger UI se carga desde CDN (mismo criterio que las tipografias de Google que
+  ya usan las JSP); no se anaden dependencias Maven ni assets al WAR.
+-->
+<html lang="es">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>RecetarioWeb API &middot; Swagger UI</title>
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.17.14/swagger-ui.css"/>
+    <style>
+        body { margin: 0; background: #fafafa; }
+        .topbar { display: none; }
+    </style>
+</head>
+<body>
+<div id="swagger-ui"></div>
+<script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.17.14/swagger-ui-bundle.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.17.14/swagger-ui-standalone-preset.js"></script>
+<script>
+    window.onload = function () {
+        window.ui = SwaggerUIBundle({
+            url: '/openapi?format=JSON',
+            dom_id: '#swagger-ui',
+            deepLinking: true,
+            defaultModelsExpandDepth: 1,
+            docExpansion: 'list',
+            tryItOutEnabled: true,
+            presets: [SwaggerUIBundle.presets.apis, SwaggerUIStandalonePreset],
+            layout: 'StandaloneLayout'
+        });
+    };
+</script>
+</body>
+</html>

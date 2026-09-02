@@ -6,46 +6,39 @@
 package com.RecetarioWeb.Controller;
 
 import com.RecetarioWeb.Beans.CetagoriaBeanRemote;
-import com.RecetarioWeb.Beans.PersonaBeanRemote;
+import com.RecetarioWeb.Controller.support.EjbLocator;
+import com.RecetarioWeb.Controller.support.Results;
 import com.RecetarioWeb.Entitys.Categoria;
-import com.RecetarioWeb.Entitys.Persona;
 import com.opensymphony.xwork2.ActionSupport;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 
 /**
+ * Alta de una categoria (solo administrador).
  *
  * @author Administrador
  */
 public class CategoriaAction extends ActionSupport {
 
-    PersonaBeanRemote personaBean = lookupPersonaBeanRemote();
-    CetagoriaBeanRemote cetagoriaBean = lookupCetagoriaBeanRemote();
+    private static final Logger LOG = Logger.getLogger(CategoriaAction.class.getName());
 
-    Client client = Client.getInstace();
-    Categoria categoria;
-    Persona persona;
-    String nameCat;
-    String fechaCat;
-    String desCat;
+    private final CetagoriaBeanRemote cetagoriaBean = EjbLocator.lookup(CetagoriaBeanRemote.class);
 
-    public CategoriaAction() {
-        categoria = new Categoria();
-    }
+    private final Categoria categoria = new Categoria();
+    private String nameCat;
+    private String fechaCat;
+    private String desCat;
 
     @Override
     public String execute() throws Exception {
         validar();
-        if (!hasErrors()) {
-            cargarObject();
-            return "success";
-        } else {
-            return "error";
+        if (hasErrors()) {
+            return Results.ERROR;
         }
+        cargarObject();
+        LOG.log(Level.INFO, "Categoria creada: ''{0}''", nameCat);
+        return Results.SUCCESS;
     }
 
     public void cargarObject() {
@@ -57,10 +50,13 @@ public class CategoriaAction extends ActionSupport {
 
     private void validar() {
         if (nameCat == null || nameCat.isEmpty()) {
-            addFieldError("nameCat", "El nickname es requerido");
+            addFieldError("nameCat", "El nombre es requerido");
+        } else if (cetagoriaBean.findByName(nameCat) != null) {
+            LOG.log(Level.WARNING, "Alta de categoria rechazada: nombre duplicado ''{0}''", nameCat);
+            addFieldError("nameCat", "Ya existe una categoria con ese nombre");
         }
         if (desCat == null || desCat.isEmpty()) {
-            addFieldError("desCat", "La descripcion es requerido");
+            addFieldError("desCat", "La descripcion es requerida");
         }
     }
 
@@ -87,25 +83,4 @@ public class CategoriaAction extends ActionSupport {
     public void setDesCat(String desCat) {
         this.desCat = desCat;
     }
-
-    private CetagoriaBeanRemote lookupCetagoriaBeanRemote() {
-        try {
-            Context c = new InitialContext();
-            return (CetagoriaBeanRemote) c.lookup("java:global/Recetario-Gestion-ejb/CetagoriaBean!com.RecetarioWeb.Beans.CetagoriaBeanRemote");
-        } catch (NamingException ne) {
-            Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", ne);
-            throw new RuntimeException(ne);
-        }
-    }
-
-    private PersonaBeanRemote lookupPersonaBeanRemote() {
-        try {
-            Context c = new InitialContext();
-            return (PersonaBeanRemote) c.lookup("java:global/Recetario-Gestion-ejb/PersonaBean!com.RecetarioWeb.Beans.PersonaBeanRemote");
-        } catch (NamingException ne) {
-            Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", ne);
-            throw new RuntimeException(ne);
-        }
-    }
-
 }

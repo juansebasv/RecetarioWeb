@@ -8,6 +8,20 @@
         <filter-name>struts2</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
+
+    <!--
+      API REST (JAX-RS). Se declara el mapeo explicito de la Application
+      com.RecetarioWeb.Api.RestApplication para que el contenedor registre
+      Jersey bajo /api/* (el filtro de Struts sigue en /* pero deja pasar las
+      rutas que no son acciones). Ver tambien struts.action.excludePattern.
+    -->
+    <servlet>
+        <servlet-name>com.RecetarioWeb.Api.RestApplication</servlet-name>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>com.RecetarioWeb.Api.RestApplication</servlet-name>
+        <url-pattern>/api/*</url-pattern>
+    </servlet-mapping>
     <session-config>
         <session-timeout>
             30

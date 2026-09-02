@@ -32,6 +32,8 @@
         try { buttonFx(); }         catch (e) {}
         try { fixBrokenImages(); }  catch (e) {}
         try { smoothAnchors(); }    catch (e) {}
+        try { backToTop(); }        catch (e) {}
+        try { notifyCreated(); }    catch (e) {}
         try { authFeedback(); }     catch (e) {}
     });
 
@@ -207,6 +209,54 @@
         });
     }
 
+    /* ------------------------------ boton "volver arriba" --------- */
+    /* El template trae <a class="gototop"> DENTRO del <footer>, donde su
+       'position: fixed' queda atrapado por transforms de ancestros (parallax,
+       reveal...) y el boton "desaparece" al bajar. Aqui se saca del footer y se
+       cuelga de <body>, con la clase .rui-float, para que quede fijo de verdad
+       en la esquina inferior derecha y visible siempre. */
+    function backToTop() {
+        var link = document.querySelector(".footer .gototop") || document.querySelector(".gototop");
+        if (!link) { return; }
+        document.body.appendChild(link);
+        link.classList.add("rui-float");
+        link.setAttribute("aria-label", "Volver arriba");
+
+        var SHOW_AT = 320;
+        var onScroll = function () {
+            var y = window.pageYOffset || document.documentElement.scrollTop || 0;
+            link.classList.toggle("rui-show", y > SHOW_AT);
+        };
+        window.addEventListener("scroll", onScroll, { passive: true });
+        window.addEventListener("resize", onScroll);
+        onScroll();
+
+        link.addEventListener("click", function (ev) {
+            ev.preventDefault();
+            window.scrollTo({ top: 0, behavior: RM ? "auto" : "smooth" });
+        });
+    }
+
+    /* --------------------------- aviso de "elemento creado" ------- */
+    /* Los servlets/actions de alta redirigen con ?created=usuario|receta|tip|
+       empresa|categoria. Se lee, se muestra un toast de exito y se limpia la
+       URL para que un F5 no lo repita. */
+    function notifyCreated() {
+        var params;
+        try { params = new URLSearchParams(location.search); } catch (e) { return; }
+        var created = params.get("created");
+        if (!created) { return; }
+        try { history.replaceState({}, document.title, location.pathname + location.hash); } catch (e) {}
+        var labels = {
+            usuario: "Usuario registrado correctamente.",
+            receta:  "Receta creada correctamente.",
+            tip:     "Tip creado correctamente.",
+            empresa: "Empresa creada correctamente.",
+            categoria: "Categoria creada correctamente."
+        };
+        toast("Guardado", labels[created] || "Elemento creado correctamente.", "success");
+    }
+
     /* ------------------------------ anclas suaves ----------------- */
     function smoothAnchors() {
         document.addEventListener("click", function (ev) {
@@ -267,26 +317,26 @@
         setTimeout(function () { s.remove(); }, 2200);
     }
 
+    /* Los servlets de login/logout redirigen con ?auth=login|loginfail|logout
+       (y &u=<nick>). Se lee de la URL -en un redirect el document.referrer no es
+       fiable- y luego se limpia con replaceState para que un F5 no lo repita. */
     function authFeedback() {
-        var ref = document.referrer || "";
-        var path = location.pathname.toLowerCase();
-        var fromLogin = /\/sesioncontroller$/.test(ref.toLowerCase());
-        var fromLogout = /\/logoutservlet$/.test(ref.toLowerCase());
-        var onHome = /home_(admin|user)\.jsp$/.test(path);
-        var onIndex = /(\/|index\.jsp)$/.test(path) && !onHome;
-        var nick = cap(getCookie("nickname"));
+        var params;
+        try { params = new URLSearchParams(location.search); } catch (e) { return; }
+        var auth = params.get("auth");
+        if (!auth) { return; }
 
-        if (fromLogin && onHome) {
+        var nick = cap(params.get("u") || getCookie("nickname"));
+        var clean = location.pathname + location.hash;
+        try { history.replaceState({}, document.title, clean); } catch (e) {}
+
+        if (auth === "login") {
             splash("🍳", "Bienvenido" + (nick ? ", " + nick : "") + "!", "Sesion iniciada");
             toast("Sesion iniciada", "Que disfrutes cocinando, " + (nick || "chef") + ".", "success");
-            return;
-        }
-        if (fromLogin && onIndex) {
+        } else if (auth === "loginfail") {
             toast("No pudimos iniciar sesion", "Revisa tu usuario y contrasena e intenta de nuevo.", "error");
-            return;
-        }
-        if (fromLogout) {
-            splash("👋", "Hasta pronto!", "Sesion cerrada");
+        } else if (auth === "logout") {
+            splash("👋", (nick ? "Hasta pronto, " + nick + "!" : "Hasta pronto!"), "Sesion cerrada");
             toast("Sesion cerrada", "Tu sesion se cerro correctamente. Vuelve pronto.", "info");
         }
     }

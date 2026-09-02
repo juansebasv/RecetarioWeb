@@ -6,9 +6,7 @@
 package com.RecetarioWeb.Beans;
 
 import com.RecetarioWeb.Entitys.Persona;
-import com.RecetarioWeb.Negocio.TipFacade;
 import com.RecetarioWeb.Negocio.Usuario;
-import com.RecetarioWeb.Negocio.UsuarioRemote;
 import javax.ejb.EJB;
 import javax.ejb.Singleton;
 

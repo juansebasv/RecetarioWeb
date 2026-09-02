@@ -29,7 +29,7 @@
         <link rel="stylesheet" href="css/font-awesome.css">
         <link rel="stylesheet" href="css/animate.css">
         <link rel="stylesheet" href="css/theme.css">
-        <link rel="stylesheet" href="css/recetario-ui.css">
+        <link rel="stylesheet" href="css/recetario-ui.css?v=3">
 
         <link href='https://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
         <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,300italic,400italic,600,600italic,700,700italic,800,800italic' rel='stylesheet' type='text/css'>
@@ -93,8 +93,8 @@
                             </tr>
                             <tr>
                                 <td><img src="http://wowthemes.net/demo/leroy/img/dummies/10.jpg" alt="" width="180" height="180" class="img-rounded"/></td>
-                                <td><i><font style="color:#398439 " size="5"><strong><%=empresas.get(i).getNombreemp()%></strong></font></i><br/>
-                                    <i><%=empresas.get(i).getDescripcionemp()%></i><br/>
+                                <td><i><font style="color:#398439 " size="5"><strong><%=ControllerReceta.escape(empresas.get(i).getNombreemp())%></strong></font></i><br/>
+                                    <i><%=ControllerReceta.escape(empresas.get(i).getDescripcionemp())%></i><br/>
                             </tr><br/>
                             <%}%>
                         </table>
@@ -133,7 +133,7 @@
         <script src="js/parallax.js"></script>
         <script src="js/easing.js"></script>
         <script src="js/wow.js"></script>
-        <script src="js/smoothscroll.js"></script>
+        <script src="js/smoothscroll.js?v=3"></script>
         <script src="js/masonry.js"></script>
         <script src="js/imgloaded.js"></script>
         <script src="js/classie.js"></script>
@@ -162,6 +162,6 @@
                 });
             });
         </script>
-        <script src="js/recetario-ui.js"></script>
+        <script src="js/recetario-ui.js?v=3"></script>
     </body>
 </html>

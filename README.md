@@ -28,7 +28,8 @@ Aplicación **Java EE** de tres módulos, empaquetada para levantarse **entera c
 | ✨ | [Funcionalidades](#-funcionalidades) | 🧰 | [Stack tecnológico](#-stack-tecnológico) |
 | 🧱 | [Arquitectura](#-arquitectura) | 🚀 | [Despliegue local](#-despliegue-local-en-3-pasos) |
 | 🔐 | [Flujo de autenticación](#-flujo-de-autenticación) | 🎨 | [Capa de interfaz](#-capa-de-interfaz) |
-| ⚙️ | [Pipeline de build](#-pipeline-de-build) | 📁 | [Estructura del repositorio](#-estructura-del-repositorio) |
+| ⚙️ | [Pipeline de build](#-pipeline-de-build) | 🔌 | [API REST + Swagger](#-api-rest--swagger) |
+| | | 📁 | [Estructura del repositorio](#-estructura-del-repositorio) |
 | | | ⚠️ | [Notas y deuda técnica](#-notas-y-deuda-técnica) |
 
 ---
@@ -383,6 +384,40 @@ de realce sin tocar el marcado de negocio:
 
 Archivos: `RecetarioWeb-War/web/css/recetario-ui.css` y `RecetarioWeb-War/web/js/recetario-ui.js`,
 enlazados desde cada JSP.
+
+---
+
+## 🔌 API REST + Swagger
+
+Sobre el mismo dominio de negocio se expone una **API REST de solo lectura**
+(JAX-RS, paquete `com.RecetarioWeb.Api`). No añade dependencias empaquetadas: usa
+`javax.ws.rs` (ya en `javaee-web-api`) y, para la documentación, las anotaciones
+de **MicroProfile OpenAPI 2.0.1**, que Payara 5 ya trae en su runtime
+(`scope=provided`, igual que `javaee-api`). El documento OpenAPI lo genera
+**SmallRye** (incluido en Payara) y se explora con **Swagger UI**.
+
+| Recurso | URL |
+|---|---|
+| 📖 **Swagger UI** | <http://localhost:8090/RecetarioWeb-War/api-docs.html> |
+| 📄 OpenAPI (JSON) | <http://localhost:8090/openapi?format=JSON> |
+| 📄 OpenAPI (YAML) | <http://localhost:8090/openapi> |
+
+### Endpoints
+
+| Método | Ruta | Descripción |
+|---|---|---|
+| `GET` | `/api/recetas` | Lista de recetas (filtro opcional `?categoriaId=`) |
+| `GET` | `/api/recetas/{nombre}` | Una receta por su nombre exacto (`404` si no existe) |
+| `GET` | `/api/tips` · `/api/tips/{nombre}` | Tips de cocina |
+| `GET` | `/api/categorias` · `/api/categorias/{nombre}` | Categorías del catálogo |
+| `GET` | `/api/empresas` · `/api/empresas/{nombre}` | Empresas proveedoras |
+| `GET` | `/api/comentarios` | Comentarios (filtro opcional `?recetaId=`) |
+| `GET` | `/api/usuarios` · `/api/usuarios/{codigo}` | Perfil **público** de usuarios (nunca la contraseña; filtro `?rol=`) |
+
+Cada operación está anotada con `@Operation`, `@APIResponse`, `@Tag` y `@Parameter`,
+y cada campo de los DTO (`com.RecetarioWeb.Api.dto`) con `@Schema` (descripción y
+ejemplo), de modo que Swagger UI muestra la documentación completa y permite
+*"Try it out"*.
 
 ---
 

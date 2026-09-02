@@ -33,7 +33,7 @@ public class RecetaFacade extends AbstractFacade<Receta> {
     }
 
     public void registrarReceta(Receta receta) {
-        receta.setIdreceta(count());
+        receta.setIdreceta(nextIdreceta());
         em.persist(receta);
     }
 
@@ -41,13 +41,16 @@ public class RecetaFacade extends AbstractFacade<Receta> {
         em.merge(receta);
     }
 
+    /** MAX(id)+1 para no reutilizar identificadores tras un borrado. */
+    private int nextIdreceta() {
+        Number max = (Number) em.createQuery(
+                "SELECT MAX(r.idreceta) FROM Receta r").getSingleResult();
+        return max == null ? 0 : max.intValue() + 1;
+    }
+
     public ArrayList<Receta> findAll() {
         Query q = em.createNamedQuery("Receta.findAll");
-        try {
-            return new ArrayList<Receta>(q.getResultList());
-        } catch (NoResultException e) {
-            return null;
-        }
+        return new ArrayList<Receta>(q.getResultList());
     }
 
     public Receta findByName(String nombrereceta) {
@@ -63,11 +66,7 @@ public class RecetaFacade extends AbstractFacade<Receta> {
     public ArrayList<Receta> findByFecha(String fechareceta) {
         Query q = em.createNamedQuery("Receta.findByFechareceta");
         q.setParameter("fechareceta", fechareceta);
-        try {
-            return new ArrayList<Receta>(q.getResultList());
-        } catch (NoResultException e) {
-            return null;
-        }
+        return new ArrayList<Receta>(q.getResultList());
     }
 
     public Receta findByIdUser(String iduserreceta) {

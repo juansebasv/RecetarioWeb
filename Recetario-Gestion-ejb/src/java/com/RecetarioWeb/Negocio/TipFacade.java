@@ -33,7 +33,7 @@ public class TipFacade extends AbstractFacade<Tip> {
     }
 
     public void registrarTip(Tip tip) {
-        tip.setIdtip(count());
+        tip.setIdtip(nextIdtip());
         em.persist(tip);
     }
 
@@ -41,13 +41,16 @@ public class TipFacade extends AbstractFacade<Tip> {
         em.merge(tip);
     }
 
+    /** MAX(id)+1 para no reutilizar identificadores tras un borrado. */
+    private int nextIdtip() {
+        Number max = (Number) em.createQuery(
+                "SELECT MAX(t.idtip) FROM Tip t").getSingleResult();
+        return max == null ? 0 : max.intValue() + 1;
+    }
+
     public ArrayList<Tip> findAll() {
         Query q = em.createNamedQuery("Tip.findAll");
-        try {
-            return new ArrayList<Tip>(q.getResultList());
-        } catch (NoResultException e) {
-            return null;
-        }
+        return new ArrayList<Tip>(q.getResultList());
     }
 
     public Tip findByName(String nombretip) {
@@ -63,11 +66,7 @@ public class TipFacade extends AbstractFacade<Tip> {
     public ArrayList<Tip> findByFecha(String fechatip) {
         Query q = em.createNamedQuery("Tip.findByFechatip");
         q.setParameter("fechatip", fechatip);
-        try {
-            return new ArrayList<Tip>(q.getResultList());
-        } catch (NoResultException e) {
-            return null;
-        }
+        return new ArrayList<Tip>(q.getResultList());
     }
 
     public Tip findByIdUser(String idusertip) {

@@ -6,32 +6,28 @@
 package com.RecetarioWeb.Controller;
 
 /**
+ * Contexto de navegacion del usuario (nickname y elemento seleccionado en el
+ * catalogo) compartido entre servlets, Struts Actions y JSP.
  *
- * @author Personal
+ * <p><b>Limitacion conocida (deuda tecnica):</b> es un singleton de JVM, por lo
+ * que el estado es global a todo el servidor y no por usuario. Es la pieza
+ * historica del proyecto academico; migrarlo a {@code HttpSession} implica tocar
+ * las ~20 JSP y queda fuera del alcance de esta iteracion.
  */
-public class Client {
+public final class Client {
 
-    private static Client client = null;
+    private static final Client INSTANCE = new Client();
+
     private String nombre = "";
     private String nombreTip = "";
     private String nickname = "";
 
-    public Client() {
+    private Client() {
     }
 
+    /** Nombre historico (con errata) conservado por compatibilidad con las JSP. */
     public static Client getInstace() {
-        if (client == null) {
-            client = new Client();
-        }
-        return client;
-    }
-
-    public static Client getClient() {
-        return client;
-    }
-
-    public static void setClient(Client client) {
-        Client.client = client;
+        return INSTANCE;
     }
 
     public String getNombre() {
@@ -57,5 +53,4 @@ public class Client {
     public void setNombreTip(String nombreTip) {
         this.nombreTip = nombreTip;
     }
-
 }

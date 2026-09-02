@@ -32,7 +32,7 @@
         <link rel="stylesheet" href="css/font-awesome.css">
         <link rel="stylesheet" href="css/animate.css">
         <link rel="stylesheet" href="css/theme.css">
-        <link rel="stylesheet" href="css/recetario-ui.css">
+        <link rel="stylesheet" href="css/recetario-ui.css?v=3">
 
         <link href='https://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
         <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,300italic,400italic,600,600italic,700,700italic,800,800italic' rel='stylesheet' type='text/css'>
@@ -93,7 +93,7 @@
                 <div class="container">
                     <div class="heading text-center">
                         <img class="dividerline" src="img/sep.png" alt="">
-                        <h2><%=controller.getReceta().getNombrereceta()%></h2>
+                        <h2><%=ControllerReceta.escape(controller.getReceta().getNombrereceta())%></h2>
                         <img class="dividerline" src="img/sep.png" alt="">
                         <table>
                             <tr>
@@ -103,7 +103,7 @@
                         </table>
                         <br/><h2>Descripcion:</h2>
                         <div class="row">
-                            <blockquote><%=controller.formatDescri(controller.getReceta().getDescripcionreceta())%>"<cite><%=controller.getReceta().getAutorreceta()%><br/><i class="fa fa-star"></i> <i class="fa fa-star"></i> <i class="fa fa-star"></i> <i class="fa fa-star"></i> <i class="fa fa-star"></i></cite> </blockquote>
+                            <blockquote><%=controller.formatDescri(controller.getReceta().getDescripcionreceta())%>"<cite><%=ControllerReceta.escape(controller.getReceta().getAutorreceta())%><br/><i class="fa fa-star"></i> <i class="fa fa-star"></i> <i class="fa fa-star"></i> <i class="fa fa-star"></i> <i class="fa fa-star"></i></cite> </blockquote>
                         </div>
                         <i><%=controller.getReceta().getFechareceta()%></i>
                         <br/><br/>
@@ -114,7 +114,7 @@
                                 for (int i = 0; i < comentarios.size(); i++) {
                         %>
                         <div class="row">
-                            <blockquote><%=comentarios.get(i).getTextocomen()%>"<cite><%=controller.nombreUser(comentarios.get(i).getIdusercomen())%><br/><i class="fa fa-star"></i> <i class="fa fa-star"></i> <i class="fa fa-star"></i> <i class="fa fa-star"></i> <i class="fa fa-star"></i></cite> </blockquote>
+                            <blockquote><%=ControllerReceta.escape(comentarios.get(i).getTextocomen())%>"<cite><%=controller.nombreUser(comentarios.get(i).getIdusercomen())%><br/><i class="fa fa-star"></i> <i class="fa fa-star"></i> <i class="fa fa-star"></i> <i class="fa fa-star"></i> <i class="fa fa-star"></i></cite> </blockquote>
                         </div>  
                         <%      }
                             }
@@ -172,7 +172,7 @@
         <script src="js/parallax.js"></script>
         <script src="js/easing.js"></script>
         <script src="js/wow.js"></script>
-        <script src="js/smoothscroll.js"></script>
+        <script src="js/smoothscroll.js?v=3"></script>
         <script src="js/masonry.js"></script>
         <script src="js/imgloaded.js"></script>
         <script src="js/classie.js"></script>
@@ -201,6 +201,6 @@
                 });
             });
         </script>
-        <script src="js/recetario-ui.js"></script>
+        <script src="js/recetario-ui.js?v=3"></script>
     </body>
 </html>

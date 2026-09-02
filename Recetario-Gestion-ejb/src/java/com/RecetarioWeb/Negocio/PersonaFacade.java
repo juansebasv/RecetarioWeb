@@ -33,7 +33,7 @@ public class PersonaFacade extends AbstractFacade<Persona> {
     }
 
     public void registrarPersona(Persona persona) {
-        persona.setIdpersona(count());
+        persona.setIdpersona(nextIdpersona());
         em.persist(persona);
     }
 
@@ -41,13 +41,20 @@ public class PersonaFacade extends AbstractFacade<Persona> {
         em.merge(persona);
     }
 
+    /**
+     * Siguiente valor libre para la columna no-clave {@code idpersona}. Se usa
+     * MAX(id)+1 en lugar de COUNT(*) para no reutilizar identificadores tras un
+     * borrado.
+     */
+    private int nextIdpersona() {
+        Number max = (Number) em.createQuery(
+                "SELECT MAX(p.idpersona) FROM Persona p").getSingleResult();
+        return max == null ? 0 : max.intValue() + 1;
+    }
+
     public ArrayList<Persona> findAll() {
         Query q = em.createNamedQuery("Persona.findAll");
-        try {
-            return new ArrayList<Persona>(q.getResultList());
-        } catch (NoResultException e) {
-            return null;
-        }
+        return new ArrayList<Persona>(q.getResultList());
     }
 
     public Persona findByCodigo(String code) {
@@ -83,50 +90,30 @@ public class PersonaFacade extends AbstractFacade<Persona> {
     public ArrayList<Persona> findByPais(String pais) {
         Query q = em.createNamedQuery("Persona.findByPais");
         q.setParameter("pais", pais);
-        try {
-            return new ArrayList<Persona>(q.getResultList());
-        } catch (NoResultException e) {
-            return null;
-        }
+        return new ArrayList<Persona>(q.getResultList());
     }
 
     public ArrayList<Persona> findByCiudad(String ciudad) {
         Query q = em.createNamedQuery("Persona.findByCiudad");
         q.setParameter("ciudad", ciudad);
-        try {
-            return new ArrayList<Persona>(q.getResultList());
-        } catch (NoResultException e) {
-            return null;
-        }
+        return new ArrayList<Persona>(q.getResultList());
     }
 
     public ArrayList<Persona> findByFecha(String fechanacimeinto) {
         Query q = em.createNamedQuery("Persona.findByFechanacimeinto");
         q.setParameter("fechanacimeinto", fechanacimeinto);
-        try {
-            return new ArrayList<Persona>(q.getResultList());
-        } catch (NoResultException e) {
-            return null;
-        }
+        return new ArrayList<Persona>(q.getResultList());
     }
 
     public ArrayList<Persona> findByRol(String rol) {
         Query q = em.createNamedQuery("Persona.findByRol");
-        q.setParameter("rol", rol);
-        try {
-            return new ArrayList<Persona>(q.getResultList());
-        } catch (NoResultException e) {
-            return null;
-        }
+        q.setParameter("rol", rol == null ? null : Integer.valueOf(rol.trim()));
+        return new ArrayList<Persona>(q.getResultList());
     }
 
     public ArrayList<Persona> findByActivo(String activo) {
         Query q = em.createNamedQuery("Persona.findByActivo");
-        q.setParameter("activo", activo);
-        try {
-            return new ArrayList<Persona>(q.getResultList());
-        } catch (NoResultException e) {
-            return null;
-        }
+        q.setParameter("activo", Boolean.valueOf(activo));
+        return new ArrayList<Persona>(q.getResultList());
     }
 }

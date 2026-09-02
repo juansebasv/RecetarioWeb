@@ -24,7 +24,7 @@
         <link rel="stylesheet" href="css/font-awesome.css">
         <link rel="stylesheet" href="css/animate.css">
         <link rel="stylesheet" href="css/theme.css">
-        <link rel="stylesheet" href="css/recetario-ui.css">
+        <link rel="stylesheet" href="css/recetario-ui.css?v=3">
 
         <link href='https://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
         <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,300italic,400italic,600,600italic,700,700italic,800,800italic' rel='stylesheet' type='text/css'>
@@ -178,7 +178,7 @@
         <script src="js/parallax.js"></script>
         <script src="js/easing.js"></script>
         <script src="js/wow.js"></script>
-        <script src="js/smoothscroll.js"></script>
+        <script src="js/smoothscroll.js?v=3"></script>
         <script src="js/masonry.js"></script>
         <script src="js/imgloaded.js"></script>
         <script src="js/classie.js"></script>
@@ -207,6 +207,6 @@
                 });
             });
         </script>
-        <script src="js/recetario-ui.js"></script>
+        <script src="js/recetario-ui.js?v=3"></script>
     </body>
 </html>
