@@ -8,6 +8,9 @@ package com.RecetarioWeb.Controller;
 import com.RecetarioWeb.Beans.MembreciaBeanRemote;
 import com.RecetarioWeb.Beans.PersonaBeanRemote;
 import com.RecetarioWeb.Beans.RecetaBeanRemote;
+import com.RecetarioWeb.Controller.support.AppConfig;
+import com.RecetarioWeb.Controller.support.EjbLocator;
+import com.RecetarioWeb.Controller.support.Results;
 import com.RecetarioWeb.Entitys.Membrecia;
 import com.RecetarioWeb.Entitys.Persona;
 import com.RecetarioWeb.Entitys.Receta;
@@ -16,55 +19,50 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 import javax.servlet.http.Part;
 
 /**
+ * Alta de una receta. Publicar otorga puntos de membresia y, al superar el
+ * umbral configurado de recetas, activa la membresia del autor.
  *
  * @author Administrador
  */
 public class RecetaAction extends ActionSupport {
 
-    MembreciaBeanRemote membreciaBean = lookupMembreciaBeanRemote();
-    RecetaBeanRemote recetaBean = lookupRecetaBeanRemote();
-    PersonaBeanRemote personaBean = lookupPersonaBeanRemote();
+    private static final Logger LOG = Logger.getLogger(RecetaAction.class.getName());
+    private static final String DIGITS_PATTERN = "\\d+";
 
-    Client client = Client.getInstace();
-    Persona persona;
-    Receta receta;
-    String nameRec;
-    String autorRec;
-    String ingreRec;
-    String descripRec;
-    String imageRec;
-    String fechaRec;
-    String idCategoria;
-    Part fileUpload;
+    private final MembreciaBeanRemote membreciaBean = EjbLocator.lookup(MembreciaBeanRemote.class);
+    private final RecetaBeanRemote recetaBean = EjbLocator.lookup(RecetaBeanRemote.class);
+    private final PersonaBeanRemote personaBean = EjbLocator.lookup(PersonaBeanRemote.class);
+
+    private final Client client = Client.getInstace();
+    private final Persona persona;
+    private final Receta receta = new Receta();
+    private String nameRec;
+    private String autorRec;
+    private String ingreRec;
+    private String descripRec;
+    private String imageRec;
+    private String fechaRec;
+    private String idCategoria;
+    private Part fileUpload;
 
     public RecetaAction() {
-        receta = new Receta();
         persona = personaBean.findByUsername(client.getNickname());
     }
 
     @Override
     public String execute() throws Exception {
         validar();
-        if (!hasErrors()) {
-            cargarObject();
-            if (client.getNickname().equals("admin")) {
-                return "success";
-            } else {
-                return "proccess";
-            }
-        } else {
-            if (client.getNickname().equals("admin")) {
-                return "error";
-            } else {
-                return "failed";
-            }
+        Integer rol = persona == null ? null : persona.getRol();
+        if (persona == null || hasErrors()) {
+            return Results.ko(rol);
         }
+        cargarObject();
+        LOG.log(Level.INFO, "Receta publicada: ''{0}'' por ''{1}''",
+                new Object[]{nameRec, persona.getCodigo()});
+        return Results.ok(rol);
     }
 
     public void cargarObject() {
@@ -75,39 +73,61 @@ public class RecetaAction extends ActionSupport {
         receta.setIngredientes(ingreRec);
         receta.setAutorreceta(autorRec);
         receta.setIdcatreceta(Integer.parseInt(idCategoria));
-        Membrecia mem = new Membrecia();
-        mem = membreciaBean.findByUser(persona.getCodigo());
+
+        actualizarMembrecia();
+        recetaBean.registrarReceta(receta);
+    }
+
+    /**
+     * Suma {@code membership.points-per-recipe} puntos al autor; si aun no tiene
+     * membresia y ya alcanzo {@code membership.recipes-threshold} recetas, se la
+     * crea activa.
+     */
+    private void actualizarMembrecia() {
+        Membrecia mem = membreciaBean.findByUser(persona.getCodigo());
+        int pointsPerRecipe = AppConfig.membershipPointsPerRecipe();
         if (mem != null) {
-            int points = mem.getPuntos();
-            mem.setPuntos(points + 10);
-        } else {
-            ArrayList<Receta> all = recetaBean.findAll();
-            int cont = 0;
-            for (int i = 0; i < all.size(); i++) {
-                if (all.get(i).getIduserreceta().equals(persona.getCodigo())) {
-                    cont++;
-                }
-            }
-            if (cont >= 10) {
-                mem.setActivamem(Boolean.TRUE);
-                mem.setFechamem(new Date());
-                mem.setPuntos(10);
-                mem.setIdusermem(persona.getCodigo());
-                membreciaBean.registrarMembrecia(mem);
+            int puntos = mem.getPuntos() == null ? 0 : mem.getPuntos();
+            mem.setPuntos(puntos + pointsPerRecipe);
+            membreciaBean.actualizarMembrecia(mem);
+            return;
+        }
+        if (recetasPublicadasPor(persona.getCodigo()) >= AppConfig.membershipRecipesThreshold()) {
+            mem = new Membrecia();
+            mem.setIdusermem(persona.getCodigo());
+            mem.setActivamem(Boolean.TRUE);
+            mem.setFechamem(new Date());
+            mem.setPuntos(pointsPerRecipe);
+            membreciaBean.registrarMembrecia(mem);
+            LOG.log(Level.INFO, "Membresia activada para ''{0}''", persona.getCodigo());
+        }
+    }
+
+    private int recetasPublicadasPor(String codigo) {
+        int total = 0;
+        ArrayList<Receta> todas = recetaBean.findAll();
+        for (Receta r : todas) {
+            if (codigo.equals(r.getIduserreceta())) {
+                total++;
             }
         }
-        recetaBean.registrarReceta(receta);
+        return total;
     }
 
     private void validar() {
         if (nameRec == null || nameRec.isEmpty()) {
             addFieldError("nameRec", "El nombre es requerido");
+        } else if (recetaBean.findByName(nameRec) != null) {
+            addFieldError("nameRec", "Ya existe una receta con ese nombre");
         }
         if (autorRec == null || autorRec.isEmpty()) {
-            addFieldError("autorRec", "El password es requerido");
+            addFieldError("autorRec", "El autor es requerido");
         }
         if (descripRec == null || descripRec.isEmpty()) {
-            addFieldError("descripRec", "El password es requerido");
+            addFieldError("descripRec", "La descripcion es requerida");
+        }
+        if (idCategoria == null || !idCategoria.matches(DIGITS_PATTERN)) {
+            addFieldError("idCategoria", "Debe seleccionar una categoria valida");
         }
     }
 
@@ -174,35 +194,4 @@ public class RecetaAction extends ActionSupport {
     public void setIdCategoria(String idCategoria) {
         this.idCategoria = idCategoria;
     }
-
-    private PersonaBeanRemote lookupPersonaBeanRemote() {
-        try {
-            Context c = new InitialContext();
-            return (PersonaBeanRemote) c.lookup("java:global/Recetario-Gestion-ejb/PersonaBean!com.RecetarioWeb.Beans.PersonaBeanRemote");
-        } catch (NamingException ne) {
-            Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", ne);
-            throw new RuntimeException(ne);
-        }
-    }
-
-    private RecetaBeanRemote lookupRecetaBeanRemote() {
-        try {
-            Context c = new InitialContext();
-            return (RecetaBeanRemote) c.lookup("java:global/Recetario-Gestion-ejb/RecetaBean!com.RecetarioWeb.Beans.RecetaBeanRemote");
-        } catch (NamingException ne) {
-            Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", ne);
-            throw new RuntimeException(ne);
-        }
-    }
-
-    private MembreciaBeanRemote lookupMembreciaBeanRemote() {
-        try {
-            Context c = new InitialContext();
-            return (MembreciaBeanRemote) c.lookup("java:global/Recetario-Gestion-ejb/MembreciaBean!com.RecetarioWeb.Beans.MembreciaBeanRemote");
-        } catch (NamingException ne) {
-            Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", ne);
-            throw new RuntimeException(ne);
-        }
-    }
-
 }

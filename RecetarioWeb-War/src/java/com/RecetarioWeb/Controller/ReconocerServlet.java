@@ -5,8 +5,8 @@
  */
 package com.RecetarioWeb.Controller;
 
+import com.RecetarioWeb.Controller.support.WebKeys;
 import java.io.IOException;
-import java.io.PrintWriter;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -14,83 +14,43 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
+ * Guarda en el {@link Client} la seleccion del usuario (categoria a filtrar o
+ * elemento a ver en detalle) y redirige a la vista correspondiente.
  *
  * @author Personal
  */
 @WebServlet(name = "ReconocerServlet", urlPatterns = {"/ReconocerServlet"})
 public class ReconocerServlet extends HttpServlet {
 
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet ReconocerServlet</title>");
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet ReconocerServlet at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
-        }
-    }
-
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /**
-     * Handles the HTTP <code>GET</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
+    /** Filtro de recetas por categoria: guarda la categoria elegida y redirige. */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        //processRequest(request, response);
-        Client client = Client.getInstace();
-        String catredirec = request.getParameter("catredirec");
-        client.setNombre(catredirec);
-        response.sendRedirect("../RecetarioWeb-War/page_recetas.jsp");
+        Client.getInstace().setNombre(request.getParameter("catredirec"));
+        response.sendRedirect(WebKeys.VIEW_PAGE_RECETAS);
     }
 
     /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * "Leer mas": guarda el elemento seleccionado y abre su ficha de detalle.
+     * El parametro {@code redirecTip} enruta a la ficha de tip; {@code redirec},
+     * a la de receta.
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        //processRequest(request, response);
         Client client = Client.getInstace();
-        String redirec = request.getParameter("redirec");
-        client.setNombre(redirec);
-        response.sendRedirect("../RecetarioWeb-War/page_view_receta.jsp");
+        String tip = request.getParameter("redirecTip");
+        if (tip != null && !tip.isEmpty()) {
+            client.setNombreTip(tip);
+            response.sendRedirect(WebKeys.VIEW_PAGE_VIEW_TIP);
+            return;
+        }
+        client.setNombre(request.getParameter("redirec"));
+        response.sendRedirect(WebKeys.VIEW_PAGE_VIEW_RECETA);
     }
 
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
     @Override
     public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
-
+        return "Enrutado de seleccion de catalogo de RecetarioWeb";
+    }
 }

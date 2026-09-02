@@ -33,7 +33,8 @@ public class ComentarioFacade extends AbstractFacade<Comentario> {
     }
 
     public void registrarComentario(Comentario comentario) {
-        comentario.setIdcomen(count());
+        // idcomen es IDENTITY (serial en PostgreSQL): lo asigna la base de datos.
+        comentario.setIdcomen(null);
         em.persist(comentario);
     }
 
@@ -43,11 +44,7 @@ public class ComentarioFacade extends AbstractFacade<Comentario> {
 
     public ArrayList<Comentario> findAll() {
         Query q = em.createNamedQuery("Comentario.findAll");
-        try {
-            return new ArrayList<Comentario>(q.getResultList());
-        } catch (NoResultException e) {
-            return null;
-        }
+        return new ArrayList<Comentario>(q.getResultList());
     }
 
     public Comentario findByIdReceta(String idrecetacomen) {
@@ -73,10 +70,6 @@ public class ComentarioFacade extends AbstractFacade<Comentario> {
     public ArrayList<Comentario> findByFecha(String fechacomen) {
         Query q = em.createNamedQuery("Comentario.findByFechacomen");
         q.setParameter("fechacomen", fechacomen);
-        try {
-            return new ArrayList<Comentario>(q.getResultList());
-        } catch (NoResultException e) {
-            return null;
-        }
+        return new ArrayList<Comentario>(q.getResultList());
     }
 }

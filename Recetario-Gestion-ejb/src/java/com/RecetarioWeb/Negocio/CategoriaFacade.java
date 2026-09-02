@@ -33,7 +33,7 @@ public class CategoriaFacade extends AbstractFacade<Categoria> {
     }
 
     public void registrarCategoria(Categoria categoria) {
-        categoria.setIdcat(count());
+        categoria.setIdcat(nextIdcat());
         em.persist(categoria);
     }
 
@@ -41,13 +41,16 @@ public class CategoriaFacade extends AbstractFacade<Categoria> {
         em.merge(categoria);
     }
 
+    /** MAX(id)+1 para no reutilizar identificadores tras un borrado. */
+    private int nextIdcat() {
+        Number max = (Number) em.createQuery(
+                "SELECT MAX(c.idcat) FROM Categoria c").getSingleResult();
+        return max == null ? 0 : max.intValue() + 1;
+    }
+
     public ArrayList<Categoria> findAll() {
         Query q = em.createNamedQuery("Categoria.findAll");
-        try {
-            return new ArrayList<Categoria>(q.getResultList());
-        } catch (NoResultException e) {
-            return null;
-        }
+        return new ArrayList<Categoria>(q.getResultList());
     }
 
     public Categoria findByName(String name) {

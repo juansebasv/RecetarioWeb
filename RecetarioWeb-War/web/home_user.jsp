@@ -27,7 +27,7 @@
         <link rel="stylesheet" href="css/font-awesome.css">
         <link rel="stylesheet" href="css/animate.css">
         <link rel="stylesheet" href="css/theme.css">
-        <link rel="stylesheet" href="css/recetario-ui.css">
+        <link rel="stylesheet" href="css/recetario-ui.css?v=3">
 
         <link href='https://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
         <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,300italic,400italic,600,600italic,700,700italic,800,800italic' rel='stylesheet' type='text/css'>
@@ -86,7 +86,7 @@
                     <div class="heading text-center">
                         <img class="dividerline" src="img/sep.png" alt="">
                         <h2>Te Damos la Bienvenida</h2>
-                        <h2><%=client.getNickname()%></h2>
+                        <h2><%=ControllerReceta.escape(client.getNickname())%></h2>
                         <img class="dividerline" src="img/sep.png" alt="">
                         <h3>Amantes de la buena cocina es un portal de recetas de cocina sencillas, pensadas para que todos los que no quieran complicarse la vida en la cocina obtengan platos resultones y gustosos. En cada receta encontrara la lista de ingredientes, instrucciones para elaborarla y un foro donde podra compartir nuevas recetas.</h3>
                     </div>
@@ -252,7 +252,7 @@
         <script src="js/parallax.js"></script>
         <script src="js/easing.js"></script>
         <script src="js/wow.js"></script>
-        <script src="js/smoothscroll.js"></script>
+        <script src="js/smoothscroll.js?v=3"></script>
         <script src="js/masonry.js"></script>
         <script src="js/imgloaded.js"></script>
         <script src="js/classie.js"></script>
@@ -281,6 +281,6 @@
                 });
             });
         </script>
-        <script src="js/recetario-ui.js"></script>
+        <script src="js/recetario-ui.js?v=3"></script>
     </body>
 </html>

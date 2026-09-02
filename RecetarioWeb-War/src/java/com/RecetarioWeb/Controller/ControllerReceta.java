@@ -11,6 +11,8 @@ import com.RecetarioWeb.Beans.EmpresaBeanRemote;
 import com.RecetarioWeb.Beans.PersonaBeanRemote;
 import com.RecetarioWeb.Beans.RecetaBeanRemote;
 import com.RecetarioWeb.Beans.TipBeanRemote;
+import com.RecetarioWeb.Controller.support.AppConfig;
+import com.RecetarioWeb.Controller.support.EjbLocator;
 import com.RecetarioWeb.Entitys.Categoria;
 import com.RecetarioWeb.Entitys.Comentario;
 import com.RecetarioWeb.Entitys.Empresa;
@@ -18,24 +20,24 @@ import com.RecetarioWeb.Entitys.Persona;
 import com.RecetarioWeb.Entitys.Receta;
 import com.RecetarioWeb.Entitys.Tip;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 
 /**
+ * Fachada de solo lectura que consumen las JSP (via scriptlet) para pintar
+ * catalogos y fichas. Resuelve los EJB a traves de {@link EjbLocator}.
  *
  * @author Personal
  */
 public class ControllerReceta {
 
-    ComentarioBeanRemote comentarioBean = lookupComentarioBeanRemote();
-    CetagoriaBeanRemote cetagoriaBean = lookupCetagoriaBeanRemote();
-    PersonaBeanRemote personaBean = lookupPersonaBeanRemote();
-    EmpresaBeanRemote empresaBean = lookupEmpresaBeanRemote();
-    TipBeanRemote tipBean = lookupTipBeanRemote();
-    RecetaBeanRemote recetaBean = lookupRecetaBeanRemote();
+    private static final String LINE_BREAK = "<br/>";
+    private static final String INGREDIENT_SEPARATOR = "-";
+
+    private final ComentarioBeanRemote comentarioBean = EjbLocator.lookup(ComentarioBeanRemote.class);
+    private final CetagoriaBeanRemote cetagoriaBean = EjbLocator.lookup(CetagoriaBeanRemote.class);
+    private final PersonaBeanRemote personaBean = EjbLocator.lookup(PersonaBeanRemote.class);
+    private final EmpresaBeanRemote empresaBean = EjbLocator.lookup(EmpresaBeanRemote.class);
+    private final TipBeanRemote tipBean = EjbLocator.lookup(TipBeanRemote.class);
+    private final RecetaBeanRemote recetaBean = EjbLocator.lookup(RecetaBeanRemote.class);
 
     private ArrayList<Receta> recetas = new ArrayList();
     private ArrayList<Tip> tips = new ArrayList();
@@ -53,26 +55,19 @@ public class ControllerReceta {
     }
 
     public void cargarRecetas(String nombre) {
-        System.out.println(":::::: " + nombre);
-        Categoria categoria = cetagoriaBean.findByName(nombre);
-        if (categoria == null || nombre == null || nombre.isEmpty()) {
-            recetas = recetaBean.findAll();
-        } else {
-            ArrayList<Receta> aux = recetaBean.findAll();
-            System.out.println("entro: " + aux.size());
-            for (int i = 0; i < aux.size(); i++) {
-                System.out.println("id:   " + aux.get(i).getIdcatreceta());
-                if (aux.get(i).getIdcatreceta() != null) {
-                    int y = aux.get(i).getIdcatreceta();
-                    int p = categoria.getIdcat();
-                    String num1 = Integer.toString(p);
-                    String num2 = Integer.toString(y);
-                    System.out.println(":::::: " + num1 + " " + num2);
-                    if (num1.equals(num2)) {
-                        System.out.println("entro2");
-                        recetas.add(aux.get(i));
-                    }
-                }
+        ArrayList<Receta> todas = recetaBean.findAll();
+        if (todas == null) {
+            todas = new ArrayList<Receta>();
+        }
+        Categoria categoria = (nombre == null || nombre.isEmpty()) ? null : cetagoriaBean.findByName(nombre);
+        if (categoria == null) {
+            recetas = todas;
+            return;
+        }
+        recetas = new ArrayList<Receta>();
+        for (Receta r : todas) {
+            if (r.getIdcatreceta() != null && r.getIdcatreceta() == categoria.getIdcat()) {
+                recetas.add(r);
             }
         }
     }
@@ -90,91 +85,127 @@ public class ControllerReceta {
     }
 
     public void cargarDuo() {
-        ArrayList<Receta> aux = new ArrayList();
-        aux = recetaBean.findAll();
-        if (aux.size() != 0 && aux.size() > 2) {
+        ArrayList<Receta> aux = recetaBean.findAll();
+        if (aux != null && aux.size() >= 2) {
             receta_1 = aux.get(aux.size() - 1);
             receta_2 = aux.get(aux.size() - 2);
         }
     }
 
     public void reconocerReceta(String nombre) {
-        ArrayList<Receta> aux = new ArrayList();
-        aux = recetaBean.findAll();
-        for (int i = 0; i < aux.size(); i++) {
-            if (aux.get(i).getNombrereceta().equals(nombre)) {
-                receta = aux.get(i);
+        if (nombre == null) {
+            return;
+        }
+        ArrayList<Receta> aux = recetaBean.findAll();
+        if (aux == null) {
+            return;
+        }
+        for (Receta r : aux) {
+            if (nombre.equals(r.getNombrereceta())) {
+                receta = r;
                 break;
             }
         }
     }
 
     public void reconocerTip(String nombre) {
-        ArrayList<Tip> aux = new ArrayList();
-        aux = tipBean.findAll();
-        for (int i = 0; i < aux.size(); i++) {
-            if (aux.get(i).getNombretip().equals(nombre)) {
-                tip = aux.get(i);
+        if (nombre == null) {
+            return;
+        }
+        ArrayList<Tip> aux = tipBean.findAll();
+        if (aux == null) {
+            return;
+        }
+        for (Tip t : aux) {
+            if (nombre.equals(t.getNombretip())) {
+                tip = t;
                 break;
             }
         }
     }
 
-    public String formatText(String nombre) {
-        String array[] = nombre.split(" ");
-        String ans = "";
-        if (array.length > 20) {
-            for (int i = 0; i < array.length; i++) {
-                if (i > 20) {
-                    break;
-                } else {
-                    if (i % 5 == 0 && i != 0) {
-                        ans += array[i] + "<br/>";
-                    } else {
-                        ans += array[i] + " ";
-                    }
-                }
-            }
-            ans += "...";
-            return ans;
-        } else {
-            return nombre;
+    /**
+     * Recorta un texto largo para la portada: a partir de
+     * {@code text.summary.max-words} palabras lo corta e inserta un salto cada
+     * {@code text.summary.words-per-line}. Siempre devuelve HTML escapado.
+     */
+    public String formatText(String texto) {
+        if (texto == null) {
+            return "";
         }
+        int maxWords = AppConfig.summaryMaxWords();
+        int wordsPerLine = AppConfig.summaryWordsPerLine();
+        String[] palabras = texto.split(" ");
+        if (palabras.length <= maxWords) {
+            return escape(texto);
+        }
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i <= maxWords && i < palabras.length; i++) {
+            sb.append(escape(palabras[i]));
+            sb.append(i != 0 && i % wordsPerLine == 0 ? LINE_BREAK : " ");
+        }
+        return sb.append("...").toString();
     }
 
-    public String formatIngre(String nombre) {
-        String array[] = nombre.split("-");
-        String ans = "";
-        for (int i = 0; i < array.length; i++) {
-            ans += array[i] + "<br/>";
-        }
-        return ans;
+    public String formatIngre(String texto) {
+        return joinLines(texto);
     }
 
-    public String formatDescri(String nombre) {
-        String array[] = nombre.split("-");
-        String ans = "";
-        for (int i = 0; i < array.length; i++) {
-            ans += array[i] + "<br/>";
+    public String formatDescri(String texto) {
+        return joinLines(texto);
+    }
+
+    /** Divide por '-' y une con saltos de linea, escapando cada fragmento. */
+    private String joinLines(String texto) {
+        if (texto == null) {
+            return "";
         }
-        return ans;
+        StringBuilder sb = new StringBuilder();
+        for (String parte : texto.split(INGREDIENT_SEPARATOR)) {
+            sb.append(escape(parte)).append(LINE_BREAK);
+        }
+        return sb.toString();
     }
 
     public void cargarComent(String nombre) {
+        Receta actual = (nombre == null) ? null : recetaBean.findByName(nombre);
         ArrayList<Comentario> aux = comentarioBean.findAll();
-        Receta receta = recetaBean.findByName(nombre);
-        System.out.println("nombre " + nombre + " " + receta.getNombrereceta());
-        for (int i = 0; i < aux.size(); i++) {
-            if (aux.get(i).getIdrecetacomen() == receta.getIdreceta()) {
-                System.out.println("entro");
-                comentario.add(aux.get(i));
+        if (actual == null || aux == null) {
+            return;
+        }
+        for (Comentario c : aux) {
+            if (c.getIdrecetacomen() != null && c.getIdrecetacomen() == actual.getIdreceta()) {
+                comentario.add(c);
             }
         }
     }
 
-    public String nombreUser(String nombre) {
-        Persona persona = personaBean.findByCodigo(nombre);
-        return persona.getNombre();
+    public String nombreUser(String codigo) {
+        if (codigo == null) {
+            return "";
+        }
+        Persona persona = personaBean.findByCodigo(codigo);
+        return escape(persona == null ? codigo : persona.getNombre());
+    }
+
+    /** Escapa caracteres HTML para evitar XSS almacenado al pintar en las JSP. */
+    public static String escape(String value) {
+        if (value == null) {
+            return "";
+        }
+        StringBuilder sb = new StringBuilder(value.length() + 16);
+        for (int i = 0; i < value.length(); i++) {
+            char c = value.charAt(i);
+            switch (c) {
+                case '&': sb.append("&amp;"); break;
+                case '<': sb.append("&lt;"); break;
+                case '>': sb.append("&gt;"); break;
+                case '"': sb.append("&quot;"); break;
+                case '\'': sb.append("&#39;"); break;
+                default: sb.append(c);
+            }
+        }
+        return sb.toString();
     }
 
     public ArrayList<Comentario> getComentario() {
@@ -259,66 +290,6 @@ public class ControllerReceta {
 
     public void setCategorias(ArrayList<Categoria> categorias) {
         this.categorias = categorias;
-    }
-
-    private RecetaBeanRemote lookupRecetaBeanRemote() {
-        try {
-            Context c = new InitialContext();
-            return (RecetaBeanRemote) c.lookup("java:global/Recetario-Gestion-ejb/RecetaBean!com.RecetarioWeb.Beans.RecetaBeanRemote");
-        } catch (NamingException ne) {
-            Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", ne);
-            throw new RuntimeException(ne);
-        }
-    }
-
-    private TipBeanRemote lookupTipBeanRemote() {
-        try {
-            Context c = new InitialContext();
-            return (TipBeanRemote) c.lookup("java:global/Recetario-Gestion-ejb/TipBean!com.RecetarioWeb.Beans.TipBeanRemote");
-        } catch (NamingException ne) {
-            Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", ne);
-            throw new RuntimeException(ne);
-        }
-    }
-
-    private EmpresaBeanRemote lookupEmpresaBeanRemote() {
-        try {
-            Context c = new InitialContext();
-            return (EmpresaBeanRemote) c.lookup("java:global/Recetario-Gestion-ejb/EmpresaBean!com.RecetarioWeb.Beans.EmpresaBeanRemote");
-        } catch (NamingException ne) {
-            Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", ne);
-            throw new RuntimeException(ne);
-        }
-    }
-
-    private PersonaBeanRemote lookupPersonaBeanRemote() {
-        try {
-            Context c = new InitialContext();
-            return (PersonaBeanRemote) c.lookup("java:global/Recetario-Gestion-ejb/PersonaBean!com.RecetarioWeb.Beans.PersonaBeanRemote");
-        } catch (NamingException ne) {
-            Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", ne);
-            throw new RuntimeException(ne);
-        }
-    }
-
-    private CetagoriaBeanRemote lookupCetagoriaBeanRemote() {
-        try {
-            Context c = new InitialContext();
-            return (CetagoriaBeanRemote) c.lookup("java:global/Recetario-Gestion-ejb/CetagoriaBean!com.RecetarioWeb.Beans.CetagoriaBeanRemote");
-        } catch (NamingException ne) {
-            Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", ne);
-            throw new RuntimeException(ne);
-        }
-    }
-
-    private ComentarioBeanRemote lookupComentarioBeanRemote() {
-        try {
-            Context c = new InitialContext();
-            return (ComentarioBeanRemote) c.lookup("java:global/Recetario-Gestion-ejb/ComentarioBean!com.RecetarioWeb.Beans.ComentarioBeanRemote");
-        } catch (NamingException ne) {
-            Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", ne);
-            throw new RuntimeException(ne);
-        }
     }
 
 }

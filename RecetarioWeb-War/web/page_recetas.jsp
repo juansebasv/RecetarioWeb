@@ -31,7 +31,7 @@
         <link rel="stylesheet" href="css/font-awesome.css">
         <link rel="stylesheet" href="css/animate.css">
         <link rel="stylesheet" href="css/theme.css">
-        <link rel="stylesheet" href="css/recetario-ui.css">
+        <link rel="stylesheet" href="css/recetario-ui.css?v=3">
 
         <link href='https://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
         <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,300italic,400italic,600,600italic,700,700italic,800,800italic' rel='stylesheet' type='text/css'>
@@ -103,8 +103,8 @@
                             <tr>
                             <form action="ReconocerServlet" method="post">
                                 <td><img src="http://wowthemes.net/demo/leroy/img/dummies/10.jpg" alt="" width="210" height="210" class="img-rounded"/></td>
-                                <td><input type="radio" name="redirec" value="<%=recetas.get(i).getNombrereceta()%>"/>&nbsp;&nbsp;<i><font style="color:#398439 " size="5"><strong><%=recetas.get(i).getNombrereceta()%></strong></font></i><br/>
-                                    <i><%=recetas.get(i).getDescripcionreceta()%></i><br/>
+                                <td><input type="radio" name="redirec" value="<%=ControllerReceta.escape(recetas.get(i).getNombrereceta())%>"/>&nbsp;&nbsp;<i><font style="color:#398439 " size="5"><strong><%=ControllerReceta.escape(recetas.get(i).getNombrereceta())%></strong></font></i><br/>
+                                    <i><%=ControllerReceta.escape(recetas.get(i).getDescripcionreceta())%></i><br/>
                                     <input type="submit" value="Leer mas" title="Leer mas" class="btn btn-warning"/></td>
                             </form>
                             </tr><br/>
@@ -145,7 +145,7 @@
         <script src="js/parallax.js"></script>
         <script src="js/easing.js"></script>
         <script src="js/wow.js"></script>
-        <script src="js/smoothscroll.js"></script>
+        <script src="js/smoothscroll.js?v=3"></script>
         <script src="js/masonry.js"></script>
         <script src="js/imgloaded.js"></script>
         <script src="js/classie.js"></script>
@@ -174,6 +174,6 @@
                 });
             });
         </script>
-        <script src="js/recetario-ui.js"></script>
+        <script src="js/recetario-ui.js?v=3"></script>
     </body>
 </html>

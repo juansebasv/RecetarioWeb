@@ -33,7 +33,7 @@ public class EmpresaFacade extends AbstractFacade<Empresa> {
     }
 
     public void registrarEmpresa(Empresa empresa) {
-        empresa.setIdemp(count());
+        empresa.setIdemp(nextIdemp());
         em.persist(empresa);
     }
 
@@ -41,13 +41,16 @@ public class EmpresaFacade extends AbstractFacade<Empresa> {
         em.merge(empresa);
     }
 
+    /** MAX(id)+1 para no reutilizar identificadores tras un borrado. */
+    private int nextIdemp() {
+        Number max = (Number) em.createQuery(
+                "SELECT MAX(e.idemp) FROM Empresa e").getSingleResult();
+        return max == null ? 0 : max.intValue() + 1;
+    }
+
     public ArrayList<Empresa> findAll() {
         Query q = em.createNamedQuery("Empresa.findAll");
-        try {
-            return new ArrayList<Empresa>(q.getResultList());
-        } catch (NoResultException e) {
-            return null;
-        }
+        return new ArrayList<Empresa>(q.getResultList());
     }
 
     public Empresa findByName(String name) {

@@ -6,27 +6,30 @@
 package com.RecetarioWeb.Controller;
 
 import com.RecetarioWeb.Beans.PersonaBeanRemote;
+import com.RecetarioWeb.Controller.support.EjbLocator;
+import com.RecetarioWeb.Controller.support.Results;
 import com.RecetarioWeb.Entitys.Persona;
+import com.RecetarioWeb.Negocio.PasswordHasher;
 import com.opensymphony.xwork2.ActionSupport;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 
 /**
+ * Cambio de contrasena del usuario autenticado.
  *
  * @author Administrador
  */
 public class CambioContraAction extends ActionSupport {
 
-    PersonaBeanRemote personaBean = lookupPersonaBeanRemote();
+    private static final Logger LOG = Logger.getLogger(CambioContraAction.class.getName());
 
-    Client client = Client.getInstace();
-    Persona persona;
-    String contrasenaAnt;
-    String contrasenaNue;
-    String contrasenaConf;
+    private final PersonaBeanRemote personaBean = EjbLocator.lookup(PersonaBeanRemote.class);
+
+    private final Client client = Client.getInstace();
+    private Persona persona;
+    private String contrasenaAnt;
+    private String contrasenaNue;
+    private String contrasenaConf;
 
     public CambioContraAction() {
         persona = personaBean.findByUsername(client.getNickname());
@@ -35,52 +38,41 @@ public class CambioContraAction extends ActionSupport {
     @Override
     public String execute() throws Exception {
         validar();
-        if (!hasErrors()) {
-            if (cargarObject()) {
-                personaBean.actualizarPersona(persona);
-                if (persona.getRol().equals(1)) {
-                    return "success";
-                } else {
-                    return "proccess";
-                }
-            } else {
-                if (persona.getRol().equals(1)) {
-                    return "error";
-                } else {
-                    return "failed";
-                }
-            }
-        } else {
-            if (persona.getRol().equals(1)) {
-                return "error";
-            } else {
-                return "failed";
-            }
+        Integer rol = persona == null ? null : persona.getRol();
+        if (!hasErrors() && cargarObject()) {
+            personaBean.actualizarPersona(persona);
+            LOG.log(Level.INFO, "Contrasena actualizada para el usuario ''{0}''", client.getNickname());
+            return Results.ok(rol);
         }
+        return Results.ko(rol);
     }
 
+    /**
+     * Aplica el cambio: exige que la contrasena actual sea correcta y que la
+     * nueva coincida con su confirmacion. La nueva clave se almacena con hash.
+     */
     public boolean cargarObject() {
-        if (persona != null) {
-            if (contrasenaNue.equals(contrasenaConf)) {
-                persona.setPass(contrasenaConf);
-                return true;
-            } else {
-                return false;
-            }
-        } else {
+        if (persona == null || contrasenaNue == null || !contrasenaNue.equals(contrasenaConf)) {
             return false;
         }
+        if (!PasswordHasher.matches(contrasenaAnt, persona.getPass())) {
+            LOG.log(Level.WARNING, "Cambio de contrasena rechazado: clave actual incorrecta para ''{0}''",
+                    client.getNickname());
+            return false;
+        }
+        persona.setPass(PasswordHasher.hash(contrasenaNue));
+        return true;
     }
 
     private void validar() {
         if (contrasenaAnt == null || contrasenaAnt.isEmpty()) {
-            addFieldError("contrasenaAnt", "La contraseña es requerida");
+            addFieldError("contrasenaAnt", "La contrasena actual es requerida");
         }
         if (contrasenaNue == null || contrasenaNue.isEmpty()) {
-            addFieldError("contrasenaNue", "La contraseña es requerido");
+            addFieldError("contrasenaNue", "La contrasena nueva es requerida");
         }
         if (contrasenaConf == null || contrasenaConf.isEmpty()) {
-            addFieldError("contrasenaConf", "La contraseña es requerido");
+            addFieldError("contrasenaConf", "La confirmacion es requerida");
         }
     }
 
@@ -106,15 +98,5 @@ public class CambioContraAction extends ActionSupport {
 
     public void setContrasenaConf(String contrasenaConf) {
         this.contrasenaConf = contrasenaConf;
-    }
-
-    private PersonaBeanRemote lookupPersonaBeanRemote() {
-        try {
-            Context c = new InitialContext();
-            return (PersonaBeanRemote) c.lookup("java:global/Recetario-Gestion-ejb/PersonaBean!com.RecetarioWeb.Beans.PersonaBeanRemote");
-        } catch (NamingException ne) {
-            Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", ne);
-            throw new RuntimeException(ne);
-        }
     }
 }

@@ -6,23 +6,30 @@
 package com.RecetarioWeb.Controller;
 
 import com.RecetarioWeb.Beans.PersonaBeanRemote;
+import com.RecetarioWeb.Controller.support.EjbLocator;
+import com.RecetarioWeb.Controller.support.Results;
 import com.RecetarioWeb.Entitys.Persona;
 import com.opensymphony.xwork2.ActionSupport;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 
 /**
+ * Edicion de los datos de contacto del usuario autenticado. Cada campo solo se
+ * actualiza si llega con un minimo de longitud razonable.
  *
  * @author Personal
  */
 public class ModificarUserAction extends ActionSupport {
 
-    PersonaBeanRemote personaBean = lookupPersonaBeanRemote();
-    Client client = Client.getInstace();
-    Persona persona;
+    private static final Logger LOG = Logger.getLogger(ModificarUserAction.class.getName());
+
+    private static final int MIN_EMAIL_LENGTH = 10;
+    private static final int MIN_DIRECCION_LENGTH = 5;
+    private static final int MIN_PAIS_LENGTH = 4;
+
+    private final PersonaBeanRemote personaBean = EjbLocator.lookup(PersonaBeanRemote.class);
+    private final Client client = Client.getInstace();
+    private Persona persona;
     private String email;
     private String direccion;
     private String pais;
@@ -32,39 +39,46 @@ public class ModificarUserAction extends ActionSupport {
         persona = personaBean.findByUsername(client.getNickname());
     }
 
+    @Override
     public String execute() throws Exception {
-        if (!hasErrors()) {
-            cargarObject();
-            personaBean.actualizarPersona(persona);
-            if (persona.getRol().equals(1)) {
-                return "success";
-            } else {
-                return "proccess";
-            }
-        } else {
-            if (persona.getRol().equals(1)) {
-                return "error";
-            } else {
-                return "failed";
-            }
+        if (persona == null) {
+            LOG.log(Level.WARNING, "Modificacion de datos sin sesion valida (nickname=''{0}'')",
+                    client.getNickname());
+            return Results.FAILED;
         }
+        if (hasErrors()) {
+            return Results.ko(persona.getRol());
+        }
+        cargarObject();
+        personaBean.actualizarPersona(persona);
+        LOG.log(Level.INFO, "Datos de contacto actualizados para ''{0}''", client.getNickname());
+        return Results.ok(persona.getRol());
     }
 
     public void cargarObject() {
-        if (persona != null) {
-            if (!email.equals("") && !email.equals(" ") && !email.isEmpty() && email.length() > 10) {
-                persona.setEmail(email);
-            }
-            if (!direccion.equals("") && !direccion.equals(" ") && !direccion.isEmpty() && direccion.length() > 5) {
-                persona.setDireccion(direccion);
-            }
-            if (!pais.equals("") && !pais.equals(" ") && !pais.isEmpty() && pais.length() >= 4) {
-                persona.setPais(pais);
-            }
-            if (!ciudad.equals("") && !ciudad.equals(" ") && !ciudad.isEmpty()) {
-                persona.setCiudad(ciudad);
-            }
+        if (persona == null) {
+            return;
         }
+        if (hasMinLength(email, MIN_EMAIL_LENGTH)) {
+            persona.setEmail(email.trim());
+        }
+        if (hasMinLength(direccion, MIN_DIRECCION_LENGTH)) {
+            persona.setDireccion(direccion.trim());
+        }
+        if (hasMinLength(pais, MIN_PAIS_LENGTH)) {
+            persona.setPais(pais.trim());
+        }
+        if (!isBlank(ciudad)) {
+            persona.setCiudad(ciudad.trim());
+        }
+    }
+
+    private static boolean isBlank(String value) {
+        return value == null || value.trim().isEmpty();
+    }
+
+    private static boolean hasMinLength(String value, int minLength) {
+        return !isBlank(value) && value.trim().length() >= minLength;
     }
 
     public String getEmail() {
@@ -98,15 +112,4 @@ public class ModificarUserAction extends ActionSupport {
     public void setCiudad(String ciudad) {
         this.ciudad = ciudad;
     }
-
-    private PersonaBeanRemote lookupPersonaBeanRemote() {
-        try {
-            Context c = new InitialContext();
-            return (PersonaBeanRemote) c.lookup("java:global/Recetario-Gestion-ejb/PersonaBean!com.RecetarioWeb.Beans.PersonaBeanRemote");
-        } catch (NamingException ne) {
-            Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", ne);
-            throw new RuntimeException(ne);
-        }
-    }
-
 }
